@@ -1,4 +1,4 @@
-package com.educar_se;
+package dev.estudos.jbank;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
