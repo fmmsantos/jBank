@@ -3,12 +3,14 @@ package dev.estudos.jbank.service;
 import java.math.BigDecimal;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import dev.estudos.jbank.dto.SolicitacaoEmprestimoTDO;
 import dev.estudos.jbank.model.Emprestimo;
 import dev.estudos.jbank.model.StatusEmprestimo;
 import dev.estudos.jbank.repository.EmprestimoRepository;
 
+@Service
 public class EmprestimoServiceImpl implements EmprestimoService {
 
 	@Autowired

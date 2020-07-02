@@ -2,14 +2,12 @@ package dev.estudos.jbank.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
-import dev.estudos.jbank.util.Parcela;
+import javax.persistence.ManyToOne;
 @Entity
 public class Emprestimo {
 	@Id
@@ -24,11 +22,12 @@ public class Emprestimo {
 	private LocalDateTime dataHoraAprovacao;
 	private LocalDateTime dataHoraRejeicao;
 	private StatusEmprestimo statusEmprestimo;
+	
+	@ManyToOne
 	private Parcela parcela;
+	
+	@ManyToOne
 	private Cliente cliente;
-	
-	
-	
 	
 	public Parcela getParcela() {
 		return parcela;
