@@ -4,12 +4,18 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
 import dev.estudos.jbank.util.Parcela;
-
+@Entity
 public class Emprestimo {
-
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private BigDecimal valorSolicidade;
+	private BigDecimal valorSolicitado;
 	private BigDecimal taxaJurosAoMes;
 	private BigDecimal totalJuros;
 	private BigDecimal totalAPagar;
@@ -18,15 +24,17 @@ public class Emprestimo {
 	private LocalDateTime dataHoraAprovacao;
 	private LocalDateTime dataHoraRejeicao;
 	private StatusEmprestimo statusEmprestimo;
-	private List<Parcela> parcelas;
+	private Parcela parcela;
+	private Cliente cliente;
 	
 	
 	
-	public List<Parcela> getParcelas() {
-		return parcelas;
+	
+	public Parcela getParcela() {
+		return parcela;
 	}
-	public void setParcelas(List<Parcela> parcelas) {
-		this.parcelas = parcelas;
+	public void setParcela(Parcela parcela) {
+		this.parcela = parcela;
 	}
 	public StatusEmprestimo getStatusEmprestimo() {
 		return statusEmprestimo;
@@ -34,7 +42,7 @@ public class Emprestimo {
 	public void setStatusEmprestimo(StatusEmprestimo statusEmprestimo) {
 		this.statusEmprestimo = statusEmprestimo;
 	}
-	private Cliente cliente;
+	
 	
 	public Cliente getCliente() {
 		return cliente;
@@ -48,11 +56,12 @@ public class Emprestimo {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public BigDecimal getValorSolicidade() {
-		return valorSolicidade;
+	
+	public BigDecimal getValorSolicitado() {
+		return valorSolicitado;
 	}
-	public void setValorSolicidade(BigDecimal valorSolicidade) {
-		this.valorSolicidade = valorSolicidade;
+	public void setValorSolicitado(BigDecimal valorSolicitado) {
+		this.valorSolicitado = valorSolicitado;
 	}
 	public BigDecimal getTaxaJurosAoMes() {
 		return taxaJurosAoMes;
