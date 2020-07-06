@@ -15,9 +15,9 @@ public class Parcela {
 	
 	private Integer numero;
 	private LocalDate dataVencimento;
-	private BigDecimal valorPrincipal;
-	private BigDecimal valorJuros;
-	private BigDecimal valorTotal;
+	private BigDecimal valorPrincipal= BigDecimal.ZERO;
+	private BigDecimal valorJuros= BigDecimal.ZERO;
+	private BigDecimal valorTotal= BigDecimal.ZERO;
 	
 	
 	public Integer getNumero() {

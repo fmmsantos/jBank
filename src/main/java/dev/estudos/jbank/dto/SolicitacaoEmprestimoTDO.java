@@ -3,6 +3,7 @@ package dev.estudos.jbank.dto;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import dev.estudos.jbank.model.Cliente;
 import dev.estudos.jbank.model.Emprestimo;
 import dev.estudos.jbank.service.EmprestimoService;
 
@@ -12,6 +13,8 @@ public class SolicitacaoEmprestimoTDO {
 	private Integer qtdParcelas;
 	private LocalDateTime dataHoraSolicitado;
 	
+	
+
 	
 	public String getCpfCnpjCliente() {
 		return cpfCnpjCliente;

@@ -1,13 +1,16 @@
 package dev.estudos.jbank.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import dev.estudos.jbank.dto.SolicitacaoEmprestimoTDO;
+import dev.estudos.jbank.model.Cliente;
 import dev.estudos.jbank.model.Emprestimo;
 import dev.estudos.jbank.model.StatusEmprestimo;
+import dev.estudos.jbank.repository.ClienteRepository;
 import dev.estudos.jbank.repository.EmprestimoRepository;
 
 @Service
@@ -15,6 +18,8 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 
 	@Autowired
 	private EmprestimoRepository repository;
+	@Autowired
+	private ClienteRepository repoCliente;
 
 	@Override
 	public Emprestimo simular(SolicitacaoEmprestimoTDO solicitacao) {
@@ -25,36 +30,34 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 	@Override
 	public Emprestimo contratar(SolicitacaoEmprestimoTDO solicitacao) {
 
-		if (solicitacao != null) {
-			solicitacao.getCpfCnpjCliente();
-			solicitacao.getValorSolicitado();
-			solicitacao.getQtdParcelas();
-			solicitacao.getDataHoraSolicitado();
-		}
-
 		if (solicitacao.getCpfCnpjCliente() == null) {
 			throw new IllegalArgumentException("Cliente não Registrado. Porfavor, realizar o cadastramento");
 		}
+		
 		Emprestimo emprestimo = new Emprestimo();
-		if (emprestimo != null) {
-
-			emprestimo.getCliente().setCpfCnpj(solicitacao.getCpfCnpjCliente());
+		
+		
+		if (solicitacao!= null) {
+			
+			Cliente cliente = repoCliente.findBycpfCnpj(solicitacao.getCpfCnpjCliente());
+			if(cliente==null)
+				throw new IllegalArgumentException("Cliente não localizado com este cpf " + solicitacao.getCpfCnpjCliente());
+			
+			emprestimo.setCliente(cliente);
+			emprestimo.setTaxaJurosAoMes(cliente.getTaxaJurosAoMes());
+			
 			emprestimo.setValorSolicitado(solicitacao.getValorSolicitado());
-			emprestimo.setTaxaJurosAoMes(emprestimo.getCliente().getTaxaJurosAoMes());
+			
+			
 			emprestimo.setTotalJuros(emprestimo.getValorSolicitado().multiply(emprestimo.getTaxaJurosAoMes())
 					.multiply(new BigDecimal(solicitacao.getQtdParcelas())));
 			emprestimo.setTotalAPagar(solicitacao.getValorSolicitado().add(emprestimo.getTotalJuros()));
-			boolean aprovado = aprovar(solicitacao);
-			boolean rejeitado = rejeitar(solicitacao);
+			
+			emprestimo.setDataHoraSolicitacao(LocalDateTime.now());
+						
+			
 
-			if(aprovado) {
-				emprestimo.setStatusEmprestimo(StatusEmprestimo.APROVADO);
-				
-			}
-			else if(rejeitado) {
-				emprestimo.setStatusEmprestimo(StatusEmprestimo.REJEITADO);
-				
-			}
+		
 		}
 		return emprestimo;
 	}

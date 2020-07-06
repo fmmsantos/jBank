@@ -15,9 +15,9 @@ public class Cliente {
 	private Long id;
 	private String nome;
 	private String cpfCnpj;
-	private BigDecimal rendaMesal;
-	private BigDecimal taxaJurosAoMes;
-	private BigDecimal limiteCredito;
+	private BigDecimal rendaMesal= BigDecimal.ZERO;
+	private BigDecimal taxaJurosAoMes= BigDecimal.ZERO;
+	private BigDecimal limiteCredito= BigDecimal.ZERO;
 	private TipoPessoa tipoPessoa;
 	
 	public Long getId() {

@@ -13,10 +13,10 @@ public class Emprestimo {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private BigDecimal valorSolicitado;
-	private BigDecimal taxaJurosAoMes;
-	private BigDecimal totalJuros;
-	private BigDecimal totalAPagar;
+	private BigDecimal valorSolicitado = BigDecimal.ZERO;
+	private BigDecimal taxaJurosAoMes = BigDecimal.ZERO;
+	private BigDecimal totalJuros = BigDecimal.ZERO;
+	private BigDecimal totalAPagar = BigDecimal.ZERO;
 	private String observacao;
 	private LocalDateTime dataHoraSolicitacao;
 	private LocalDateTime dataHoraAprovacao;
@@ -29,6 +29,7 @@ public class Emprestimo {
 	@ManyToOne
 	private Cliente cliente;
 	
+
 	public Parcela getParcela() {
 		return parcela;
 	}
