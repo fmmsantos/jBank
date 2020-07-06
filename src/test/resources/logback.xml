@@ -1,0 +1,7 @@
+<configuration debug="true">
+
+	<include resource="org/springframework/boot/logging/logback/base.xml" />
+     
+	<logger name="dev.estudos.jbank.utils.YmlTestCase" level="DEBUG" />
+	
+</configuration>

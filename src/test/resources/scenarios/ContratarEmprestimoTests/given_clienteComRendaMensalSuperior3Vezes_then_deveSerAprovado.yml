@@ -1,0 +1,61 @@
+CONTEXT:
+- _class: dev.estudos.jbank.utils.FlexibleCalendar
+  currentDate: 2020-06-20
+
+- _class: dev.estudos.jbank.model.Configuracao
+  id: 1
+  taxaJurosPadrao: 2.0
+
+- _class: dev.estudos.jbank.model.Cliente
+  id: 1
+  nome: FRANK SANTOS
+  cpfCnpj: 65651227334
+  rendaMensal: 15300
+
+INPUT:
+  _class: dev.estudos.jbank.dto.SolicitacaoEmprestimoDTO
+  cpfCnpj: 65651227334
+  valorSolicitado: 18000
+  qtdParcelas: 4
+
+OUTPUT:
+  _class: dev.estudos.jbank.model.Emprestimo
+  cliente:
+    id: 1
+    nome: FRANK SANTOS
+    cpfCnpj: 656512227334
+  valorSolicitado: 18000
+  taxaJuros: 2.0
+  totalJuros: 1440.00
+  status: APROVADO
+  observacao: RENDA MENSAL DO CLIENTE 3X SUPERIOR A PARCELA
+  parcelas:
+    size: 4
+    items:
+    # Parcela 1
+    - numero: 1
+      dataVencimento: 2020-07-20
+      valorPrincipal: 4500 
+      valorJuros: 360
+      valorTotal: 4860
+    
+    # Parcela 2
+    - numero: 2
+      dataVencimento: 2020-08-20
+      valorPrincipal: 4500
+      valorJuros: 360
+      valorTotal: 4860
+     
+    # Parcela 3
+    - numero: 3
+      dataVencimento: 2020-09-20
+      valorPrincipal: 4500
+      valorJuros: 360
+      valorTotal: 4860
+     
+    # Parcela 4
+    - numero: 4
+      dataVencimento: 2020-10-20
+      valorPrincipal: 4500
+      valorJuros: 360
+      valorTotal: 4860

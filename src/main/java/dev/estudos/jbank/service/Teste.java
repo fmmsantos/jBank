@@ -3,7 +3,7 @@ package dev.estudos.jbank.service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import dev.estudos.jbank.dto.SolicitacaoEmprestimoTDO;
+import dev.estudos.jbank.dto.SolicitacaoEmprestimoDTO;
 import dev.estudos.jbank.model.Cliente;
 import dev.estudos.jbank.model.Emprestimo;
 
@@ -18,9 +18,8 @@ public class Teste {
 	cliente.setRendaMesal(new BigDecimal("1.500"));
 	cliente.setTaxaJurosAoMes(new BigDecimal("0.02"));
 	
-	SolicitacaoEmprestimoTDO dto = new SolicitacaoEmprestimoTDO();
+	SolicitacaoEmprestimoDTO dto = new SolicitacaoEmprestimoDTO();
 	dto.setCpfCnpjCliente(cliente.getCpfCnpj());
-	dto.setDataHoraSolicitado(LocalDateTime.now());
 	dto.setQtdParcelas(3);
 	dto.setValorSolicitado(new BigDecimal("600"));
 

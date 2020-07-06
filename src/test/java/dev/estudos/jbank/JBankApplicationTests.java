@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import dev.estudos.jbank.dto.SolicitacaoEmprestimoTDO;
+import dev.estudos.jbank.dto.SolicitacaoEmprestimoDTO;
 import dev.estudos.jbank.model.Emprestimo;
 import dev.estudos.jbank.service.EmprestimoService;
 
@@ -25,7 +25,7 @@ class JBankApplicationTests {
 	
 	@Test
 	public void contratarEmprestimo() {
-		SolicitacaoEmprestimoTDO solicitacao = new SolicitacaoEmprestimoTDO();
+		SolicitacaoEmprestimoDTO solicitacao = new SolicitacaoEmprestimoDTO();
 		
 		solicitacao.setCpfCnpjCliente("65651227334");
 		solicitacao.setValorSolicitado(new BigDecimal("1000.00"));

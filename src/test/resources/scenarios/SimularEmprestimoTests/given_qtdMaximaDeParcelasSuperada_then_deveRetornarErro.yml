@@ -1,0 +1,26 @@
+# Cenario: Valor da Parcela menor que o valor minimo conifugrado deve gerar erro
+CONTEXT:
+- _class: dev.estudos.jbank.utils.FlexibleCalendar
+  currentDate: 2020-06-20
+
+- _class: dev.estudos.jbank.model.Configuracao
+  id: 1
+  taxaJurosPadrao: 2.0
+  valorMinimoParcela: 100
+  qtdMaximaParcelas: 12
+
+- _class: dev.estudos.jbank.model.Cliente
+  id: 1
+  nome: FRANK SANTOS
+  cpfCnpj: 65651227334  
+
+INPUT:
+  _class: dev.estudos.jbank.dto.SolicitacaoEmprestimoDTO
+  cpfCnpj: 65651227334
+  valorSolicitado: 15000
+  qtdParcelas: 15
+
+OUTPUT:
+  _exception:
+    type: dev.estudos.jbank.exception.BusinessException
+    message: Quantidade de parcelas maior que a maxima permitida

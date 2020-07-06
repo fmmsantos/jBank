@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import dev.estudos.jbank.dto.SolicitacaoEmprestimoTDO;
+import dev.estudos.jbank.dto.SolicitacaoEmprestimoDTO;
 import dev.estudos.jbank.model.Cliente;
 import dev.estudos.jbank.model.Emprestimo;
 import dev.estudos.jbank.model.StatusEmprestimo;
@@ -22,13 +22,13 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 	private ClienteRepository repoCliente;
 
 	@Override
-	public Emprestimo simular(SolicitacaoEmprestimoTDO solicitacao) {
+	public Emprestimo simular(SolicitacaoEmprestimoDTO solicitacao) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Emprestimo contratar(SolicitacaoEmprestimoTDO solicitacao) {
+	public Emprestimo contratar(SolicitacaoEmprestimoDTO solicitacao) {
 
 		if (solicitacao.getCpfCnpjCliente() == null) {
 			throw new IllegalArgumentException("Cliente não Registrado. Porfavor, realizar o cadastramento");
@@ -63,7 +63,7 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 	}
 
 	@Override
-	public boolean aprovar(SolicitacaoEmprestimoTDO solicitacao) {
+	public boolean aprovar(SolicitacaoEmprestimoDTO solicitacao) {
 		Emprestimo emprestimo = null;
 		if (emprestimo.getCliente().getLimiteCredito().compareTo(solicitacao.getValorSolicitado())>=0) {
 			emprestimo.setObservacao("LIMITE DE CRÉDITO ATENDE AO VALOR SOLICITADO");
@@ -76,7 +76,7 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 	}
 
 	@Override
-	public boolean rejeitar(SolicitacaoEmprestimoTDO solicitacao) {
+	public boolean rejeitar(SolicitacaoEmprestimoDTO solicitacao) {
 		Emprestimo emprestimo = null;
 		if (emprestimo.getCliente().getLimiteCredito().compareTo(solicitacao.getValorSolicitado())<0) {
 			emprestimo.setObservacao("LIMITE DE CRÉDITO NÃO ATENDE O VALOR SOLICITADO");

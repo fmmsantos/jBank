@@ -1,0 +1,67 @@
+CONTEXT:
+- _class: dev.estudos.jbank.utils.FlexibleCalendar
+  currentDate: 2020-06-15
+
+- _class: dev.estudos.jbank.model.Configuracao
+  id: 1
+  taxaJurosPadrao: 2.0
+
+- _class: dev.estudos.jbank.model.Cliente
+  id: 2
+  nome: FRANCISCO COELHO DOS SANTOS
+  cpfCnpj: 21580383300
+  rendaMensal: 1850
+  limiteCredito: 3500
+  
+INPUT:
+  _class: dev.estudos.jbank.dto.SolicitacaoEmprestimoDTO
+  cpfCnpj: 21580383300
+  valorSolicitado: 5800
+  qtdParcelas: 5
+  
+OUTPUT:
+  _class: dev.estudos.jbank.model.Emprestimo
+  cliente:
+    id: 2
+    nome: FRANCISCO COELHO DOS SANTOS
+    cpfCnpj: 21580383300
+  valorSolicitado: 5800
+  taxaJuros: 2.0
+  totalJuros: 580.00
+  status: REJEITADO
+  observacao: LIMITE DE CRÉDITO NÃO ATENDE O VALOR SOLICITADO
+  parcelas:
+  # Parcela 1
+  - numero: 1
+    dataVencimento: 2020-07-15
+    valorPrincipal: 1160
+    valorJuros: 116
+    valorTotal: 1276
+   
+  # Parcela 2
+  - numero: 2
+    dataVencimento: 2020-08-15
+    valorPrincipal: 1160
+    valorJuros: 116
+    valorTotal: 1276
+   
+  # Parcela 3
+  - numero: 3
+    dataVencimento: 2020-09-15
+    valorPrincipal: 1160
+    valorJuros: 116
+    valorTotal: 1276
+   
+  # Parcela 4
+  - numero: 4
+    dataVencimento: 2020-10-15
+    valorPrincipal: 1160
+    valorJuros: 116
+    valorTotal: 1276
+    
+  # Parcela 5
+  - numero: 5
+    dataVencimento: 2020-11-15
+    valorPrincipal: 1160
+    valorJuros: 116
+    valorTotal: 1276

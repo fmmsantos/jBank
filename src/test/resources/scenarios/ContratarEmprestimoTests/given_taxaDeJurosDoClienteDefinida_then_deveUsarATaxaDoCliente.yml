@@ -1,0 +1,39 @@
+CONTEXT:
+- _class: dev.estudos.jbank.model.Configuracao
+  id: 1
+  taxaJurosPadrao: 1.5
+
+- _class: dev.estudos.jbank.model.Cliente
+  id: 1
+  nome: FRANK SANTOS
+  cpfCnpj: 65651227334
+  taxaJurosAoMes: 3.0
+
+INPUT:
+  _class: dev.estudos.jbank.dto.SolicitacaoEmprestimoDTO
+  cpfCnpj: 65651227334
+  valorSolicitado: 5000.00
+  qtdParcelas: 2
+
+OUTPUT:
+  _class: dev.estudos.jbank.model.Emprestimo
+  cliente:
+    id: 1
+    nome: FRANK SANTOS
+    cpfCnpj: 656512227334
+  valorSolicitado: 5000
+  taxaJuros: 3.0
+  totalJuros: 300.00
+  totalAPagar: 5300.00
+  parcelas:
+  # Parcela 1
+  - numero: 1
+    valorPrincipal: 2500.00 
+    valorJuros: 150.00
+    valorTotal: 2650.00
+  
+  # Parcela 2
+  - numero: 2
+    valorPrincipal: 2500.00 
+    valorJuros: 150.00
+    valorTotal: 2650.00

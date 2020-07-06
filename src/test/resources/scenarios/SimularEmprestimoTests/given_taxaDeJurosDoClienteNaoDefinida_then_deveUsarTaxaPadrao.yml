@@ -1,0 +1,29 @@
+# Given:
+# - taxa de juros padrao definida
+# - cliente sem taxa de juros definida
+# When: 
+# - Contratar emprestimo 
+# Then: 
+# - Deve usar a taxa padrão
+CONTEXT:
+- _class: dev.estudos.jbank.model.Configuracao
+  id: 1
+  taxaJurosPadrao: 1.5
+
+- _class: dev.estudos.jbank.model.Cliente
+  id: 1
+  nome: FRANK SANTOS
+  cpfCnpj: 65651227334
+
+INPUT:
+  _class: dev.estudos.jbank.dto.SolicitacaoEmprestimoDTO
+  cpfCnpj: 65651227334
+  valorSolicitado: 5000.00
+  qtdParcelas: 2
+
+OUTPUT:
+  _class: dev.estudos.jbank.model.Emprestimo  
+  valorSolicitado: 5000
+  taxaJuros: 1.5
+  totalJuros: 150.00
+  totalAPagar: 5150.00  

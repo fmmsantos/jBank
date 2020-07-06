@@ -1,4 +1,4 @@
-package dev.estudos.jbank.util;
+package dev.estudos.jbank.utils;
 
 import java.time.LocalDateTime;
 

@@ -1,0 +1,32 @@
+# Given:
+# - Valor minimo da parcela configurado = 100 reais
+# - Valor calculado de cada parcela = 99 reais (75 principal + 24 juros)
+# When:
+# - contratar emprestimo
+# Then: 
+# - Deve gerar um erro: Valor da parcela menor que o minimo permitido 
+CONTEXT:
+- _class: dev.estudos.jbank.utils.FlexibleCalendar
+  currentDate: 2020-06-20
+
+- _class: dev.estudos.jbank.model.Configuracao
+  id: 1
+  taxaJurosPadrao: 2.0
+  valorMinimoParcela: 100
+
+- _class: dev.estudos.jbank.model.Cliente
+  id: 1
+  nome: FRANK SANTOS
+  cpfCnpj: 65651227334
+  rendaMensal: 15300
+
+INPUT:
+  _class: dev.estudos.jbank.dto.SolicitacaoEmprestimoDTO
+  cpfCnpj: 65651227334
+  valorSolicitado: 300
+  qtdParcelas: 4
+
+OUTPUT:
+  _exception:  
+    type: dev.estudos.jbank.exception.BusinessException
+    message: Valor da parcela menor que o minimo permitido
