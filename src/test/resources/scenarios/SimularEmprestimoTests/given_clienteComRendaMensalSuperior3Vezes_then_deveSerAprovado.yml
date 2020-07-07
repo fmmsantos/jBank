@@ -14,7 +14,7 @@ CONTEXT:
 
 INPUT:
   _class: dev.estudos.jbank.dto.SolicitacaoEmprestimoDTO
-  cpfCnpj: 65651227334
+  cpfCnpjCliente: 65651227334
   valorSolicitado: 18000
   qtdParcelas: 4
 
