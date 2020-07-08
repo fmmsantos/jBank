@@ -16,7 +16,7 @@ public class Cliente {
 	private String nome;
 	private String cpfCnpj;
 	private BigDecimal rendaMesal= BigDecimal.ZERO;
-	private BigDecimal taxaJurosAoMes= BigDecimal.ZERO;
+	private BigDecimal taxaJurosAoMes;
 	private BigDecimal limiteCredito= BigDecimal.ZERO;
 	private TipoPessoa tipoPessoa;
 	

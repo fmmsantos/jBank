@@ -14,36 +14,38 @@ public class Emprestimo {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private BigDecimal valorSolicitado = BigDecimal.ZERO;
-	private BigDecimal taxaJurosAoMes = BigDecimal.ZERO;
+	private BigDecimal taxaJuros = BigDecimal.ZERO;
 	private BigDecimal totalJuros = BigDecimal.ZERO;
 	private BigDecimal totalAPagar = BigDecimal.ZERO;
 	private String observacao;
 	private LocalDateTime dataHoraSolicitacao;
 	private LocalDateTime dataHoraAprovacao;
 	private LocalDateTime dataHoraRejeicao;
-	private StatusEmprestimo statusEmprestimo;
+	private StatusEmprestimo status;
 	
 	@ManyToOne
-	private Parcela parcela;
+	private Parcela parcelas;
 	
 	@ManyToOne
 	private Cliente cliente;
 	
 
-	public Parcela getParcela() {
-		return parcela;
-	}
-	public void setParcela(Parcela parcela) {
-		this.parcela = parcela;
-	}
-	public StatusEmprestimo getStatusEmprestimo() {
-		return statusEmprestimo;
-	}
-	public void setStatusEmprestimo(StatusEmprestimo statusEmprestimo) {
-		this.statusEmprestimo = statusEmprestimo;
-	}
 	
 	
+	
+	
+	public Parcela getParcelas() {
+		return parcelas;
+	}
+	public void setParcelas(Parcela parcelas) {
+		this.parcelas = parcelas;
+	}
+	public StatusEmprestimo getStatus() {
+		return status;
+	}
+	public void setStatus(StatusEmprestimo status) {
+		this.status = status;
+	}
 	public Cliente getCliente() {
 		return cliente;
 	}
@@ -63,11 +65,12 @@ public class Emprestimo {
 	public void setValorSolicitado(BigDecimal valorSolicitado) {
 		this.valorSolicitado = valorSolicitado;
 	}
-	public BigDecimal getTaxaJurosAoMes() {
-		return taxaJurosAoMes;
+	
+	public BigDecimal getTaxaJuros() {
+		return taxaJuros;
 	}
-	public void setTaxaJurosAoMes(BigDecimal taxaJurosAoMes) {
-		this.taxaJurosAoMes = taxaJurosAoMes;
+	public void setTaxaJuros(BigDecimal taxaJuros) {
+		this.taxaJuros = taxaJuros;
 	}
 	public BigDecimal getTotalJuros() {
 		return totalJuros;
