@@ -337,6 +337,14 @@ public class YmlTestCase {
 			}
 			return wrapper;
 		}
+		if (jsonValue.isArray() && (!type.isArray() && !Collection.class.isAssignableFrom(type))) {
+			String expectedType = "Array or Collection";
+			
+			fail(
+				"Invalid data type for field: " + context.getFullFieldName()
+				+ " ==> expected: " + expectedType + " but was " + type.getName()
+			);
+		}
 		if (nodeType == JsonNodeType.OBJECT) {
 			try {
 				return YAML_MAPPER.treeToValue(jsonValue, type);
