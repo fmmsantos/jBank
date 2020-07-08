@@ -50,52 +50,53 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 
 			emprestimo.setCliente(cliente);
 			emprestimo.setTaxaJuros(cliente.getTaxaJurosAoMes());
-			
-			
+
 			if (cliente.getTaxaJurosAoMes() == null) {
-			emprestimo.setTaxaJuros(configuracao.getTaxaJurosPadrao());
+				emprestimo.setTaxaJuros(configuracao.getTaxaJurosPadrao());
 			}
 
 			emprestimo.setValorSolicitado(solicitacao.getValorSolicitado());
-			
+
 			if (solicitacao.getQtdParcelas().compareTo(configuracao.getQtdMaximaParcelas()) >= 0) {
 				throw new IllegalArgumentException("A quantidade de parcela não disponível ");
 			}
 
 			emprestimo.setTotalJuros(emprestimo.getValorSolicitado().multiply(emprestimo.getTaxaJuros())
-					.multiply(new BigDecimal(solicitacao.getQtdParcelas())).divide(new BigDecimal(100), RoundingMode.HALF_EVEN));
-			
+					.multiply(new BigDecimal(solicitacao.getQtdParcelas()))
+					.divide(new BigDecimal(100), RoundingMode.HALF_EVEN));
+
 			emprestimo.setTotalAPagar(solicitacao.getValorSolicitado().add(emprestimo.getTotalJuros()));
-			
-		
+
 			emprestimo.setDataHoraSolicitacao(FlexibleCalendar.currentDateTime());
 		}
 		boolean aprovar = aprovar(solicitacao, emprestimo);
 		boolean rejeitar = rejeitar(solicitacao, emprestimo);
 		if (aprovar) {
 			emprestimo.setStatus(StatusEmprestimo.APROVADO);
-			List<Parcela> parcelass = new ArrayList<>();
+			List<Parcela> parcelas = new ArrayList<>();
 			emprestimo.setDataHoraAprovacao(FlexibleCalendar.currentDateTime());
 
 			for (int i = 0; i < solicitacao.getQtdParcelas(); i++) {
-				Parcela parcelas = new Parcela();
-				parcelas.setNumero(i);
-				parcelas.setDataVencimento(FlexibleCalendar.currentDate().plusMonths(1L));
-				
-				if (parcelas.getValorTotal().compareTo(configuracao.getValorMinimoParcela()) < 0) {
-					throw new IllegalArgumentException("O valor da parcela não pode ser menor que o valor mínimo da parcela ");
+				Parcela parcela = new Parcela();
+				parcela.setNumero(i);
+				parcela.setDataVencimento(FlexibleCalendar.currentDate().plusMonths(1L));
+
+				if (parcela.getValorTotal().compareTo(configuracao.getValorMinimoParcela()) < 0) {
+					throw new IllegalArgumentException(
+							"O valor da parcela não pode ser menor que o valor mínimo da parcela ");
 				}
-				
-				parcelas.setValorJuros(emprestimo.getTotalJuros().divide(new BigDecimal(solicitacao.getQtdParcelas()),2));
-				parcelas.setValorTotal(emprestimo.getTotalAPagar().divide(new BigDecimal(solicitacao.getQtdParcelas()),2,RoundingMode.HALF_EVEN));
-				parcelass.add(parcelas);
+
+				parcela.setValorJuros(
+						emprestimo.getTotalJuros().divide(new BigDecimal(solicitacao.getQtdParcelas()), 2));
+				parcela.setValorTotal(emprestimo.getTotalAPagar().divide(new BigDecimal(solicitacao.getQtdParcelas()),
+						2, RoundingMode.HALF_EVEN));
+				parcelas.add(parcela);
 			}
 
 		} else if (rejeitar) {
 			emprestimo.setStatus(StatusEmprestimo.REJEITADO);
 			emprestimo.setDataHoraRejeicao(FlexibleCalendar.currentDateTime());
-		}
-		else {
+		} else {
 			emprestimo.setStatus(StatusEmprestimo.EM_ANALISE);
 		}
 
@@ -122,8 +123,6 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 			emprestimo.setTaxaJuros(cliente.getTaxaJurosAoMes());
 
 			emprestimo.setValorSolicitado(solicitacao.getValorSolicitado());
-			
-			
 
 			emprestimo.setTotalJuros(emprestimo.getValorSolicitado().multiply(emprestimo.getTaxaJuros())
 					.multiply(new BigDecimal(solicitacao.getQtdParcelas())));
