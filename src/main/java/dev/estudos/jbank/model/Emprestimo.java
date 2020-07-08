@@ -2,12 +2,14 @@ package dev.estudos.jbank.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 @Entity
 public class Emprestimo {
 	@Id
@@ -23,21 +25,17 @@ public class Emprestimo {
 	private LocalDateTime dataHoraRejeicao;
 	private StatusEmprestimo status;
 	
-	@ManyToOne
-	private Parcela parcelas;
+	@OneToMany (mappedBy = "emprestimo")
+	private List<Parcela> parcelas;
 	
 	@ManyToOne
 	private Cliente cliente;
-	
 
 	
-	
-	
-	
-	public Parcela getParcelas() {
+	public List<Parcela> getParcelas() {
 		return parcelas;
 	}
-	public void setParcelas(Parcela parcelas) {
+	public void setParcelas(List<Parcela> parcelas) {
 		this.parcelas = parcelas;
 	}
 	public StatusEmprestimo getStatus() {
@@ -131,6 +129,7 @@ public class Emprestimo {
 			return false;
 		return true;
 	}
+	
 	
 	
 }

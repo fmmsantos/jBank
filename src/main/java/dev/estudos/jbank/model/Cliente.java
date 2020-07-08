@@ -15,7 +15,7 @@ public class Cliente {
 	private Long id;
 	private String nome;
 	private String cpfCnpj;
-	private BigDecimal rendaMesal= BigDecimal.ZERO;
+	private BigDecimal rendaMensal= BigDecimal.ZERO;
 	private BigDecimal taxaJurosAoMes;
 	private BigDecimal limiteCredito= BigDecimal.ZERO;
 	private TipoPessoa tipoPessoa;
@@ -38,11 +38,18 @@ public class Cliente {
 	public void setCpfCnpj(String cpfCnpj) {
 		this.cpfCnpj = cpfCnpj;
 	}
-	public BigDecimal getRendaMesal() {
-		return rendaMesal;
+	
+	public BigDecimal getRendaMensal() {
+		return rendaMensal;
 	}
-	public void setRendaMesal(BigDecimal rendaMesal) {
-		this.rendaMesal = rendaMesal;
+	public void setRendaMensal(BigDecimal rendaMensal) {
+		this.rendaMensal = rendaMensal;
+	}
+	public TipoPessoa getTipoPessoa() {
+		return tipoPessoa;
+	}
+	public void setTipoPessoa(TipoPessoa tipoPessoa) {
+		this.tipoPessoa = tipoPessoa;
 	}
 	public BigDecimal getTaxaJurosAoMes() {
 		return taxaJurosAoMes;

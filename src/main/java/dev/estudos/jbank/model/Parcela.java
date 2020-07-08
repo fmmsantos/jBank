@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Parcela {
@@ -19,7 +20,22 @@ public class Parcela {
 	private BigDecimal valorJuros= BigDecimal.ZERO;
 	private BigDecimal valorTotal= BigDecimal.ZERO;
 	
+	@ManyToOne
+	private Emprestimo emprestimo;
 	
+	
+	public Emprestimo getEmprestimo() {
+		return emprestimo;
+	}
+	public void setEmprestimo(Emprestimo emprestimo) {
+		this.emprestimo = emprestimo;
+	}
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	public Integer getNumero() {
 		return numero;
 	}
