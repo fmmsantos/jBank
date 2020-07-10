@@ -5,6 +5,7 @@ CONTEXT:
 - _class: dev.estudos.jbank.model.Configuracao
   id: 1
   taxaJurosPadrao: 2.0
+  
 
 - _class: dev.estudos.jbank.model.Cliente
   id: 2

@@ -14,8 +14,8 @@ public class Configuracao {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private BigDecimal taxaJurosPadrao = BigDecimal.ZERO;
-	private Integer qtdMaximaParcelas;
-	private BigDecimal valorMinimoParcela=BigDecimal.ZERO;
+	private Integer qtdMaximaParcelas= 0;
+	private BigDecimal valorMinimoParcela = BigDecimal.ZERO;
 	public Long getId() {
 		return id;
 	}
