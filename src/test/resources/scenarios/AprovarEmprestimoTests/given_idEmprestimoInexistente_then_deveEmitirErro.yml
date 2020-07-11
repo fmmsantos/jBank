@@ -1,0 +1,7 @@
+INPUT:
+  idEmprestimo: 999
+  motivo: TESTE
+  
+OUTPUT:
+  _exception: java.lang.IllegalArgumentException
+  message: Emprestimo não encontrado com o id 999

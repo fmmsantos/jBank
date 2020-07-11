@@ -1,0 +1,24 @@
+CONTEXT:
+- _class: dev.estudos.jbank.model.Cliente
+  id: 1
+  nome: FRANCISCO COELHO DOS SANTOS
+  cpfCnpj: 21580383300  
+  
+- _class: dev.estudos.jbank.model.Emprestimo
+  id: 1
+  cliente:
+    id: 1    
+  valorSolicitado: 5000
+  taxaJuros: 2.0
+  totalJuros: 100
+  totalAPagar: 5100
+  status: EM_ANALISE
+
+INPUT:
+  idEmprestimo: 1 
+  motivo: TESTE DE APROVACAO COM SUCESSO
+
+OUTPUT:
+  _class: java.lang.Boolean
+  booleanValue(): true
+  

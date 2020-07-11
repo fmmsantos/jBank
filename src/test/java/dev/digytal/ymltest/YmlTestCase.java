@@ -7,17 +7,21 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
+import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -34,74 +38,11 @@ public class YmlTestCase {
 	
 	ObjectNode objectNode;
 	
-	public static class CollectionWrapper {
-		public int size;
-		public ArrayNode items;
-	}
-	
-	static class Context {
-		Object bean;
-		Class<?> beanType;
-		String fieldName;
-		Object fieldValue;
-		Class<?> fieldType;
-		String fullFieldName;
-		
-		Context parent;
-		
-		Context(Object bean) {
-			this.bean = bean;
-			if (bean != null) {
-				this.beanType = bean.getClass();
-			}
-		}
-		
-		Context(Object bean, String fieldName) {
-			this(bean, fieldName, null);
-		}
-		
-		Context(Object bean, String fieldName, Context parent) {
-			this(bean);
-			this.fieldName = fieldName;
-			if (bean != null) {
-				try {
-					this.fieldValue = PropertyUtils.getSimpleProperty(bean, fieldName);
-					this.fieldType = PropertyUtils.getPropertyType(bean, fieldName);
-				} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-					String message = String.format("Field '%s' not found in class '%s'", fieldName, beanType.getName());
-					throw new IllegalStateException(message);
-				}
-			}
-			this.parent = parent;
-			this.fullFieldName = getFullFieldName();
-		}
-		
-		String getFullFieldName() {
-			if (fieldName == null) {
-				return "";
-			}
-			if (fieldName.startsWith("[") && fieldName.endsWith("]")) {
-				return parent.getFullFieldName() + fieldName;
-			}
-			if (parent == null || parent.fieldName == null) {
-				return fieldName;
-			} else {
-				return parent.getFullFieldName() + "." + fieldName;
-			}
-		}
-
-		boolean isNumber() {
-			return Number.class.isAssignableFrom(fieldType);
-		}
-
-		boolean isCollection() {
-			return Collection.class.isAssignableFrom(fieldType);
-		}
-
-	}
+	InputArgs inputArgs;
 	
 	public YmlTestCase(ObjectNode objectNode) {
 		this.objectNode = objectNode;
+		this.inputArgs = new InputArgs(objectNode.path("INPUT"));
 	}
 	
 	public static YmlTestCase ofResource(String resource) {
@@ -145,24 +86,39 @@ public class YmlTestCase {
 		}
 	}
 	
+	public String getInputItem(String itemName) {
+		JsonNode inputNode = objectNode.get("INPUT");
+		return inputNode.findPath(itemName).asText();
+	}
+	
+	public InputArgs getInputArgs() {
+		return inputArgs;
+	}
+	
 	public JsonNode getOutputNode() {
 		return objectNode.get("OUTPUT");
 	}
 	
 	public ObjectNode getExceptionNode() {
-		JsonNode jsonNode = objectNode.get("OUTPUT").get("_exception");
+		JsonNode output = objectNode.get("OUTPUT");
+		JsonNode jsonNode = output.get("_exception");
 		if (jsonNode == null) {
 			return null;
 		}
 		ObjectNode objNode;
 		if (jsonNode.getNodeType() == JsonNodeType.STRING) {
 			objNode = objectNode.objectNode();
-			objNode.put("message", jsonNode.asText());
+			objNode.put("_class", jsonNode.asText());
+			output.fieldNames().forEachRemaining(fieldName -> {
+				if (!fieldName.equals("_exception")) {
+					objNode.put(fieldName, output.get(fieldName).asText());
+				}
+			});
 		} else {
 			objNode = jsonNode.deepCopy();
 			if (!objNode.has("_class")) {
-				objNode.remove("type");
 				objNode.put("_class", objNode.path("type").asText());
+				objNode.remove("type");
 			}
 		}
 		return objNode;
@@ -202,8 +158,34 @@ public class YmlTestCase {
 
 	public <INPUT, OUTPUT> OUTPUT process(Function<INPUT, OUTPUT> processor) {
 		try {
-			INPUT input = getInput(); 
+			INPUT input = getInput();
 			OUTPUT output = processor.apply(input);
+			assertOutput(output);
+			return output;
+		} catch (Exception e) {
+			if (!assertException(e)) {
+				throw e;
+			}
+			return null;
+		}
+	}
+	
+	public <INPUT, OUTPUT> OUTPUT process(Supplier<OUTPUT> processor) {
+		try {
+			OUTPUT output = processor.get();
+			assertOutput(output);
+			return output;
+		} catch (Exception e) {
+			if (!assertException(e)) {
+				throw e;
+			}
+			return null;
+		}
+	}
+	
+	public <OUTPUT> OUTPUT processWithArgs(Function<InputArgs, OUTPUT> processor) {
+		try {
+			OUTPUT output = processor.apply(inputArgs);
 			assertOutput(output);
 			return output;
 		} catch (Exception e) {
@@ -240,14 +222,33 @@ public class YmlTestCase {
 	}
 
 	private void assertObject(JsonNode expected, Object actual, Context context) {
-		expected.fieldNames().forEachRemaining(fieldName -> {
-			if (fieldName.startsWith("_")) {
-				return;
+		if (expected.has("_class")) {			
+			try {
+				Class<?> clazz = Class.forName(expected.get("_class").textValue());
+				if (!clazz.isInstance(actual)) {
+					String message = String.format(
+						"Invalid type for %s ==> expected %s but was %s", 
+						context.getFullFieldName(), clazz.getName(), actual.getClass().getName()
+					);				
+					fail(message);
+				}
+			} catch (ClassNotFoundException e) {
+				fail("Error asserting " + context.getFullFieldName(), e);
 			}
+		}		
+		
+		Iterator<String> fieldNames = expected.fieldNames();
+		while(fieldNames.hasNext()) {
+			String fieldName = fieldNames.next();
+			
+			if (fieldName.startsWith("_")) {
+				continue;
+			}
+			
 			Context fieldContext = new Context(actual, fieldName, context);
 			LOGGER.debug("Asserting field: {}", fieldContext.fullFieldName);
 			assertField(expected, actual, fieldContext);
-		});
+		}
 	}
 	
 	private void assertField(JsonNode expected, Object actual, Context context) {
@@ -260,6 +261,10 @@ public class YmlTestCase {
 		Object expectedValue = getRawValue(jsonValue, fieldType, context);
 		
 		String message = "Field not equals: " + context.fullFieldName;
+		
+		if (context.isMethod) {
+			message = "Value not equals: " + context.fullFieldName;
+		}
 		
 		if (context.isNumber() && fieldValue != null) {
 			BigDecimal actualNumber = fieldValue instanceof BigDecimal ? (BigDecimal) fieldValue : new BigDecimal(fieldValue.toString());
@@ -373,6 +378,121 @@ public class YmlTestCase {
 			return Float.parseFloat(jsonValue.asText());
 		}
 		throw new IllegalStateException("Number Type not mapped: " + type.getName());
+	}
+	
+	public static class InputArgs {
+		JsonNode inputNode;
+		
+		public InputArgs(JsonNode node) {
+			this.inputNode = node;
+		}
+
+		public String getString(String item) {
+			JsonNode node = inputNode.path(item);
+			return node.isNull() ? null : node.asText();
+		}
+		
+		public Integer getInt(String item) {
+			String value = getString(item);
+			return StringUtils.hasText(value) ? Integer.valueOf(value) : null;
+		}
+		
+		public Long getLong(String item) {
+			String value = getString(item);
+			return StringUtils.hasText(value) ? Long.valueOf(value) : null;
+		}
+		
+		public Boolean getBoolean(String item) {
+			String value = getString(item);
+			return StringUtils.hasText(value) ? Boolean.valueOf(value) : null;
+		}
+		
+		public BigDecimal getBigDecimal(String item) {
+			String value = getString(item);
+			return StringUtils.hasText(value) ? new BigDecimal(value) : null;
+		}
+		
+		public LocalDate getLocalDate(String item) {
+			String value = getString(item);
+			return StringUtils.hasText(value) ? LocalDate.parse(value) : null;
+		}
+		
+	}
+	
+	public static class CollectionWrapper {
+		public int size;
+		public ArrayNode items;
+	}
+	
+	static class Context {
+		Object bean;
+		Class<?> beanType;
+		String fieldName;
+		Object fieldValue;
+		Class<?> fieldType;
+		String fullFieldName;
+		boolean isMethod;
+		
+		Context parent;
+		
+		Context(Object bean) {
+			this.bean = bean;
+			if (bean != null) {
+				this.beanType = bean.getClass();
+			}
+		}
+		
+		Context(Object bean, String fieldName) {
+			this(bean, fieldName, null);
+		}
+		
+		Context(Object bean, String fieldName, Context parent) {
+			this(bean);
+			this.fieldName = fieldName;
+			
+			if (bean != null) {			
+				try {
+					if (fieldName.endsWith("()")) {
+						this.isMethod = true;
+						String methodName = fieldName.substring(0, fieldName.length() - 2);
+						Method method = MethodUtils.getAccessibleMethod(bean.getClass(), methodName, new Class[] {});
+						this.fieldValue = method.invoke(bean);
+						this.fieldType = method.getReturnType();
+					} else {
+						this.fieldValue = PropertyUtils.getSimpleProperty(bean, fieldName);
+						this.fieldType = PropertyUtils.getPropertyType(bean, fieldName);
+					}
+				} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+					String message = String.format("Field '%s' not found in class '%s'", fieldName, beanType.getName());
+					throw new IllegalStateException(message);
+				}
+			}
+			this.parent = parent;
+			this.fullFieldName = getFullFieldName();
+		}
+		
+		String getFullFieldName() {
+			if (fieldName == null) {
+				return "";
+			}
+			if (fieldName.startsWith("[") && fieldName.endsWith("]")) {
+				return parent.getFullFieldName() + fieldName;
+			}
+			if (parent == null || parent.fieldName == null) {
+				return fieldName;
+			} else {
+				return parent.getFullFieldName() + "." + fieldName;
+			}
+		}
+
+		boolean isNumber() {
+			return Number.class.isAssignableFrom(fieldType);
+		}
+
+		boolean isCollection() {
+			return Collection.class.isAssignableFrom(fieldType);
+		}
+
 	}
 
 }

@@ -1,0 +1,7 @@
+INPUT:
+  idEmprestimo:
+  motivo:
+  
+OUTPUT:
+  _exception: java.lang.IllegalArgumentException
+  message: idEmprestimo e motivo devem ser informados
