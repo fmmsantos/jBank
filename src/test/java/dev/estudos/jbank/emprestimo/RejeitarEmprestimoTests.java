@@ -31,7 +31,7 @@ public class RejeitarEmprestimoTests {
 	private YmlTestCase testCase;
 	
 	@Test
-	public void given_emprestimoEmAnalise_then_deveAprovar() {
+	public void given_emprestimoEmAnalise_then_deveRejeitar() {
 		execTestCase();
 		
 		Long idEmprestimo = testCase.getInputArgs().getLong("idEmprestimo");
