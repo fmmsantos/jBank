@@ -229,37 +229,33 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 	@Override
 	public boolean aprovar(Long idEmprestimo, String motivo) {
 		if (idEmprestimo == null || motivo == "") {
-
 			throw new IllegalArgumentException("idEmprestimo e motivo devem ser informados");
-
 		}
 
-		Optional<Emprestimo> emprestimo = repository.findById(idEmprestimo);
-		
+		Optional<Emprestimo> busca = repository.findById(idEmprestimo);
 
-		if (repository.existsById(idEmprestimo) == false)
+		if (busca.isPresent()) {
 			throw new IllegalArgumentException("Emprestimo não encontrado com o id " + idEmprestimo);
+		}
 
-		emprestimo.get().getStatus();
-		if ((emprestimo.get().getStatus()==StatusEmprestimo.APROVADO)) {
+		Emprestimo emprestimo = busca.get();
+
+		if (emprestimo.getStatus() == StatusEmprestimo.APROVADO) {
 			throw new BusinessException("Somente emprestimos em analise podem ser aprovados manualmente");
-		} else {
-			emprestimo.get().getStatus();
-			if (emprestimo.get().getStatus()==StatusEmprestimo.REJEITADO) {
-				throw new BusinessException("Somente emprestimos em analise podem ser aprovados manualmente");
-			} else {
-				emprestimo.get().getStatus();
-				if (emprestimo.get().getStatus()==StatusEmprestimo.EM_ANALISE) {
-					emprestimo.get().setStatus(StatusEmprestimo.APROVADO);
-						emprestimo.get().setObservacao(motivo);
-						repository.save(emprestimo.get());	
-						
-					return true;
-				}
-			}
+		} 
+
+		if (emprestimo.getStatus() == StatusEmprestimo.REJEITADO) {
+			throw new BusinessException("Somente emprestimos em analise podem ser aprovados manualmente");
+		}
+		
+		if (emprestimo.getStatus() == StatusEmprestimo.EM_ANALISE) {
+			emprestimo.setStatus(StatusEmprestimo.APROVADO);
+			emprestimo.setObservacao(motivo);
+			repository.save(emprestimo);
+
+			return true;
 		}
 		return false;
-
 	}
 
 	@Override
