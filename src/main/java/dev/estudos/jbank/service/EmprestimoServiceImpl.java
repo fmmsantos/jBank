@@ -3,7 +3,9 @@ package dev.estudos.jbank.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import dev.estudos.jbank.repository.ClienteRepository;
 import dev.estudos.jbank.repository.ConfiguracaoRepository;
 import dev.estudos.jbank.repository.EmprestimoRepository;
 import dev.estudos.jbank.utils.FlexibleCalendar;
+import net.bytebuddy.build.Plugin.Engine.Source.Empty;
 
 @Service
 public class EmprestimoServiceImpl implements EmprestimoService {
@@ -183,7 +186,7 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 		return emprestimo;
 	}
 
-	private boolean aprovar(SolicitacaoEmprestimoDTO solicitacao, Emprestimo emprestimo) {
+	public boolean aprovar(SolicitacaoEmprestimoDTO solicitacao, Emprestimo emprestimo) {
 		Parcela parcela = emprestimo.getParcelas().get(0);
 		if (emprestimo.getCliente().getLimiteCredito().compareTo(solicitacao.getValorSolicitado()) >= 0) {
 			emprestimo.setObservacao("LIMITE DE CRÉDITO ATENDE AO VALOR SOLICITADO");
@@ -220,15 +223,58 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 	}
 
 	@Override
-	public boolean aprovar(SolicitacaoEmprestimoDTO solicitacao) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean aprovar(Long idEmprestimo, String motivo) {
+		if (idEmprestimo == null || motivo == "") {
+
+			throw new IllegalArgumentException("idEmprestimo e motivo devem ser informados");
+
+		}
+
+		Optional<Emprestimo> emprestimo = repository.findById(idEmprestimo);
+		// if(emprestimo == null)
+		// throw new IllegalArgumentException(
+		// "Emprestimo não encontrado com o id " + idEmprestimo);
+
+		if (repository.existsById(idEmprestimo) == false)
+			throw new IllegalArgumentException("Emprestimo não encontrado com o id " + idEmprestimo);
+
+		if ((emprestimo.get().getStatus().equals(emprestimo.get().getStatus().APROVADO))) {
+			throw new BusinessException("Somente emprestimos em analise podem ser aprovados manualmente");
+		} else if (emprestimo.get().getStatus().equals(emprestimo.get().getStatus().REJEITADO)) {
+			throw new BusinessException("Somente emprestimos em analise podem ser aprovados manualmente");
+		} else if (emprestimo.get().getStatus().equals(emprestimo.get().getStatus().EM_ANALISE)) {
+			emprestimo.get().setStatus(StatusEmprestimo.APROVADO);
+			emprestimo.get().getStatus();
+			return true;
+		}
+		return true;
+
 	}
 
 	@Override
-	public boolean rejeitar(SolicitacaoEmprestimoDTO solicitacao) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean rejeitar(Long idEmprestimo, String motivo) {
+		if (idEmprestimo == null || motivo == "") {
+
+			throw new IllegalArgumentException("idEmprestimo e motivo devem ser informados");
+
+		}
+
+		Optional<Emprestimo> emprestimo = repository.findById(idEmprestimo);
+
+		if (repository.existsById(idEmprestimo) == false)
+			throw new IllegalArgumentException("Emprestimo não encontrado com o id " + idEmprestimo);
+
+		if ((emprestimo.get().getStatus().equals(emprestimo.get().getStatus().APROVADO))) {
+			throw new BusinessException("Somente emprestimos em analise podem ser aprovados manualmente");
+		} else if (emprestimo.get().getStatus().equals(emprestimo.get().getStatus().REJEITADO)) {
+			throw new BusinessException("Somente emprestimos em analise podem ser aprovados manualmente");
+		} else if (emprestimo.get().getStatus().equals(emprestimo.get().getStatus().EM_ANALISE)) {
+			emprestimo.get().setStatus(StatusEmprestimo.REJEITADO);
+			emprestimo.get().getStatus();
+			return true;
+		}
+		return true;
+		
 	}
 
 }
