@@ -205,18 +205,22 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 			emprestimo.getTotalAPagar();
 			return true;
 
-		} else if (emprestimo.getCliente().getLimiteCredito().compareTo(new BigDecimal(0)) == 0) {
-			emprestimo.setStatus(StatusEmprestimo.EM_ANALISE);
-			return true;
-		}
+		} 
 
-		else if ((emprestimo.getCliente().getLimiteCredito().compareTo(solicitacao.getValorSolicitado()) < 0)) {
+		else if ((emprestimo.getCliente().getLimiteCredito().compareTo(solicitacao.getValorSolicitado() ) < 0 && (emprestimo.getCliente().getLimiteCredito().compareTo(new BigDecimal(0) )>0) )) {
 
 			emprestimo.setObservacao("LIMITE DE CRÉDITO NÃO ATENDE O VALOR SOLICITADO");
 			emprestimo.setDataHoraRejeicao(FlexibleCalendar.currentDateTime());
 			emprestimo.setStatus(StatusEmprestimo.REJEITADO);
 			return false;
 		}
+			else if (emprestimo.getCliente().getLimiteCredito().compareTo(new BigDecimal(0)) == 0) {
+				
+				emprestimo.setStatus(StatusEmprestimo.EM_ANALISE);
+				return true;
+			}
+		
+		
 
 		return false;
 
@@ -231,23 +235,30 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 		}
 
 		Optional<Emprestimo> emprestimo = repository.findById(idEmprestimo);
-		// if(emprestimo == null)
-		// throw new IllegalArgumentException(
-		// "Emprestimo não encontrado com o id " + idEmprestimo);
+		
 
 		if (repository.existsById(idEmprestimo) == false)
 			throw new IllegalArgumentException("Emprestimo não encontrado com o id " + idEmprestimo);
 
-		if ((emprestimo.get().getStatus().equals(emprestimo.get().getStatus().APROVADO))) {
+		emprestimo.get().getStatus();
+		if ((emprestimo.get().getStatus()==StatusEmprestimo.APROVADO)) {
 			throw new BusinessException("Somente emprestimos em analise podem ser aprovados manualmente");
-		} else if (emprestimo.get().getStatus().equals(emprestimo.get().getStatus().REJEITADO)) {
-			throw new BusinessException("Somente emprestimos em analise podem ser aprovados manualmente");
-		} else if (emprestimo.get().getStatus().equals(emprestimo.get().getStatus().EM_ANALISE)) {
-			emprestimo.get().setStatus(StatusEmprestimo.APROVADO);
+		} else {
 			emprestimo.get().getStatus();
-			return true;
+			if (emprestimo.get().getStatus()==StatusEmprestimo.REJEITADO) {
+				throw new BusinessException("Somente emprestimos em analise podem ser aprovados manualmente");
+			} else {
+				emprestimo.get().getStatus();
+				if (emprestimo.get().getStatus()==StatusEmprestimo.EM_ANALISE) {
+					emprestimo.get().setStatus(StatusEmprestimo.APROVADO);
+						emprestimo.get().setObservacao(motivo);
+						repository.save(emprestimo.get());	
+						
+					return true;
+				}
+			}
 		}
-		return true;
+		return false;
 
 	}
 
@@ -261,19 +272,34 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 
 		Optional<Emprestimo> emprestimo = repository.findById(idEmprestimo);
 
-		if (repository.existsById(idEmprestimo) == false)
+		if (emprestimo.isPresent() == false)
 			throw new IllegalArgumentException("Emprestimo não encontrado com o id " + idEmprestimo);
 
-		if ((emprestimo.get().getStatus().equals(emprestimo.get().getStatus().APROVADO))) {
+		emprestimo.get().getStatus();
+		if ((emprestimo.get().getStatus().equals(StatusEmprestimo.APROVADO))) {
 			throw new BusinessException("Somente emprestimos em analise podem ser aprovados manualmente");
-		} else if (emprestimo.get().getStatus().equals(emprestimo.get().getStatus().REJEITADO)) {
-			throw new BusinessException("Somente emprestimos em analise podem ser aprovados manualmente");
-		} else if (emprestimo.get().getStatus().equals(emprestimo.get().getStatus().EM_ANALISE)) {
-			emprestimo.get().setStatus(StatusEmprestimo.REJEITADO);
+		} else {
 			emprestimo.get().getStatus();
-			return true;
+			if (emprestimo.get().getStatus().equals(StatusEmprestimo.REJEITADO)) {
+				throw new BusinessException("Somente emprestimos em analise podem ser aprovados manualmente");
+			} else {
+				emprestimo.get().getStatus();
+				if (emprestimo.get().getStatus()==StatusEmprestimo.EM_ANALISE) {
+					
+					
+					emprestimo.get().setStatus(StatusEmprestimo.REJEITADO);
+					
+							
+					emprestimo.get().setObservacao(motivo);
+					repository.save(emprestimo.get());
+					
+						return true;
+				
+				}
+			}
+			
 		}
-		return true;
+		return false;
 		
 	}
 

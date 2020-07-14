@@ -25,6 +25,7 @@ public class Emprestimo {
 	private LocalDateTime dataHoraRejeicao;
 	private StatusEmprestimo status;
 	
+	
 	@OneToMany (mappedBy = "emprestimo")
 	private List<Parcela> parcelas;
 	
