@@ -234,7 +234,7 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 
 		Optional<Emprestimo> busca = repository.findById(idEmprestimo);
 
-		if (busca.isPresent()) {
+		if (!busca.isPresent()) {
 			throw new IllegalArgumentException("Emprestimo não encontrado com o id " + idEmprestimo);
 		}
 
