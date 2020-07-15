@@ -1,6 +1,7 @@
 package dev.estudos.jbank.model;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import javax.annotation.Generated;
 import javax.persistence.Entity;
@@ -15,11 +16,20 @@ public class Cliente {
 	private Long id;
 	private String nome;
 	private String cpfCnpj;
+	private LocalDate dataNascimento;
 	private BigDecimal rendaMensal= BigDecimal.ZERO;
 	private BigDecimal taxaJurosAoMes;
 	private BigDecimal limiteCredito= BigDecimal.ZERO;
 	private TipoPessoa tipoPessoa;
 	
+	
+	
+	public LocalDate getDataNascimento() {
+		return dataNascimento;
+	}
+	public void setDataNascimento(LocalDate dataNascimento) {
+		this.dataNascimento = dataNascimento;
+	}
 	public Long getId() {
 		return id;
 	}

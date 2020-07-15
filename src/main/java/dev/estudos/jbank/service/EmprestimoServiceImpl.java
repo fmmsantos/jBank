@@ -205,22 +205,20 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 			emprestimo.getTotalAPagar();
 			return true;
 
-		} 
+		}
 
-		else if ((emprestimo.getCliente().getLimiteCredito().compareTo(solicitacao.getValorSolicitado() ) < 0 && (emprestimo.getCliente().getLimiteCredito().compareTo(new BigDecimal(0) )>0) )) {
+		else if ((emprestimo.getCliente().getLimiteCredito().compareTo(solicitacao.getValorSolicitado()) < 0
+				&& (emprestimo.getCliente().getLimiteCredito().compareTo(new BigDecimal(0)) > 0))) {
 
 			emprestimo.setObservacao("LIMITE DE CRÉDITO NÃO ATENDE O VALOR SOLICITADO");
 			emprestimo.setDataHoraRejeicao(FlexibleCalendar.currentDateTime());
 			emprestimo.setStatus(StatusEmprestimo.REJEITADO);
 			return false;
+		} else if (emprestimo.getCliente().getLimiteCredito().compareTo(new BigDecimal(0)) == 0) {
+
+			emprestimo.setStatus(StatusEmprestimo.EM_ANALISE);
+			return true;
 		}
-			else if (emprestimo.getCliente().getLimiteCredito().compareTo(new BigDecimal(0)) == 0) {
-				
-				emprestimo.setStatus(StatusEmprestimo.EM_ANALISE);
-				return true;
-			}
-		
-		
 
 		return false;
 
@@ -228,13 +226,13 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 
 	@Override
 	public boolean aprovar(Long idEmprestimo, String motivo) {
-		if (idEmprestimo == null || motivo == "") {
+		if (idEmprestimo == null || motivo.isEmpty()) {
 			throw new IllegalArgumentException("idEmprestimo e motivo devem ser informados");
 		}
 
 		Optional<Emprestimo> busca = repository.findById(idEmprestimo);
 
-		if (busca.isPresent()) {
+		if (!busca.isPresent()) {
 			throw new IllegalArgumentException("Emprestimo não encontrado com o id " + idEmprestimo);
 		}
 
@@ -260,7 +258,7 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 
 	@Override
 	public boolean rejeitar(Long idEmprestimo, String motivo) {
-		if (idEmprestimo == null || motivo == "") {
+		if (idEmprestimo == null || motivo.isEmpty()) {
 
 			throw new IllegalArgumentException("idEmprestimo e motivo devem ser informados");
 
@@ -298,5 +296,4 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 		return false;
 		
 	}
-
 }
