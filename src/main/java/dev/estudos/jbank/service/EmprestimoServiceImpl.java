@@ -2,6 +2,7 @@ package dev.estudos.jbank.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,8 +50,10 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 			if (cliente == null)
 				throw new IllegalArgumentException(
 						"Cliente não localizado com este cpf " + solicitacao.getCpfCnpjCliente());
+			if(cliente.getDataNascimento())
 
 			emprestimo.setCliente(cliente);
+			
 			emprestimo.setTaxaJuros(cliente.getTaxaJurosAoMes());
 
 			if (cliente.getTaxaJurosAoMes() == null) {
@@ -259,41 +262,38 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 	@Override
 	public boolean rejeitar(Long idEmprestimo, String motivo) {
 		if (idEmprestimo == null || motivo.isEmpty()) {
-
 			throw new IllegalArgumentException("idEmprestimo e motivo devem ser informados");
-
 		}
 
-		Optional<Emprestimo> emprestimo = repository.findById(idEmprestimo);
+		Optional<Emprestimo> busca = repository.findById(idEmprestimo);
 
-		if (emprestimo.isPresent() == false)
+		if (!busca.isPresent()) {
 			throw new IllegalArgumentException("Emprestimo não encontrado com o id " + idEmprestimo);
+		}
 
-		emprestimo.get().getStatus();
-		if ((emprestimo.get().getStatus().equals(StatusEmprestimo.APROVADO))) {
+		Emprestimo emprestimo = busca.get();
+
+		if (emprestimo.getStatus() == StatusEmprestimo.APROVADO) {
 			throw new BusinessException("Somente emprestimos em analise podem ser aprovados manualmente");
-		} else {
-			emprestimo.get().getStatus();
-			if (emprestimo.get().getStatus().equals(StatusEmprestimo.REJEITADO)) {
-				throw new BusinessException("Somente emprestimos em analise podem ser aprovados manualmente");
-			} else {
-				emprestimo.get().getStatus();
-				if (emprestimo.get().getStatus()==StatusEmprestimo.EM_ANALISE) {
-					
-					
-					emprestimo.get().setStatus(StatusEmprestimo.REJEITADO);
-					
-							
-					emprestimo.get().setObservacao(motivo);
-					repository.save(emprestimo.get());
-					
-						return true;
-				
-				}
-			}
-			
+		} 
+
+		if (emprestimo.getStatus() == StatusEmprestimo.REJEITADO) {
+			throw new BusinessException("Somente emprestimos em analise podem ser aprovados manualmente");
+		}
+		
+		if (emprestimo.getStatus() == StatusEmprestimo.EM_ANALISE) {
+			emprestimo.setStatus(StatusEmprestimo.REJEITADO);
+			emprestimo.setObservacao(motivo);
+			repository.save(emprestimo);
+
+			return true;
 		}
 		return false;
-		
 	}
+
+	}
+
+		
+		
+	
 }
