@@ -17,6 +17,7 @@ public class Cliente {
 	private String nome;
 	private String cpfCnpj;
 	private LocalDate dataNascimento;
+	public int idade=0;
 	private BigDecimal rendaMensal= BigDecimal.ZERO;
 	private BigDecimal taxaJurosAoMes;
 	private BigDecimal limiteCredito= BigDecimal.ZERO;
@@ -97,6 +98,9 @@ public class Cliente {
 		return true;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return String.format("Cliente(id=%s, nome=%s, cpfCnpj=%s)", id, nome, cpfCnpj);
+	}
 
 }
