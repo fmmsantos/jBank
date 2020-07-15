@@ -1,0 +1,56 @@
+CONTEXT:
+- _class: dev.estudos.jbank.utils.FlexibleCalendar
+  currentDate: 2019-06-01
+  
+- _class: dev.estudos.jbank.model.Configuracao
+  id: 1
+  taxaJurosPadrao: 2.0
+  idadeMinima: 24
+
+- _class: dev.estudos.jbank.model.Cliente
+  id: 1
+  nome: FABIANA MACHADO DOS SANTOS
+  cpfCnpj: 12345678900
+  dataNascimento: 1995-05-20
+  taxaJurosAoMes: 2.5
+  rendaMensal: 7000
+
+INPUT:
+  _class: dev.estudos.jbank.dto.SolicitacaoEmprestimoDTO
+  cpfCnpjCliente: 12345678900
+  valorSolicitado: 6500
+  qtdParcelas: 3
+ 
+OUTPUT:
+  _class: dev.estudos.jbank.model.Emprestimo
+  cliente:
+    id: 1
+    nome: FABIANA MACHADO DOS SANTOS
+    cpfCnpj: 12345678900
+  valorSolicitado: 6500
+  taxaJuros: 2.5
+  totalJuros: 487.50
+  totalAPagar: 6987.50
+  status: APROVADO
+  parcelas:
+  # Parcela 1
+  - numero: 1
+    dataVencimento: 2019-07-01
+    valorPrincipal: 2166.67
+    valorJuros: 162.50
+    valorTotal: 2329.17
+   
+  # Parcela 2
+  - numero: 2
+    dataVencimento: 2019-08-01
+    valorPrincipal: 2166.67
+    valorJuros: 162.50
+    valorTotal: 2329.17
+   
+  # Parcela 3
+  - numero: 3
+    dataVencimento: 2019-09-01
+    valorPrincipal: 2166.67
+    valorJuros: 162.50
+    valorTotal: 2329.17
+   

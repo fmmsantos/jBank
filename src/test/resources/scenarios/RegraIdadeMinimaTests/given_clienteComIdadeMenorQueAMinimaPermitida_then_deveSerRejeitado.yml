@@ -1,0 +1,27 @@
+CONTEXT:
+- _class: dev.estudos.jbank.utils.FlexibleCalendar
+  currentDate: 2019-06-01
+  
+- _class: dev.estudos.jbank.model.Configuracao
+  id: 1
+  taxaJurosPadrao: 2.0
+  idadeMinima: 24
+
+- _class: dev.estudos.jbank.model.Cliente
+  id: 1
+  nome: MIKAELY SANTOS
+  cpfCnpj: 12345678900
+  dataNascimento: 2000-05-20
+
+INPUT:
+  _class: dev.estudos.jbank.dto.SolicitacaoEmprestimoDTO
+  cpfCnpjCliente: 12345678900
+  valorSolicitado: 1000
+  qtdParcelas: 1
+
+OUTPUT:
+  _class: dev.estudos.jbank.model.Emprestimo
+  cliente:
+    id: 1
+  status: REJEITADO
+  observacao: "CLIENTE COM IDADE MENOR QUE A MINIMA PERMITIDA: idade minima: 24 anos, idade do cliente: 19 anos."

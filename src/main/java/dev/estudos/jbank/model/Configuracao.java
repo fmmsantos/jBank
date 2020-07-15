@@ -16,6 +16,7 @@ public class Configuracao {
 	private BigDecimal taxaJurosPadrao = BigDecimal.ZERO;
 	private Integer qtdMaximaParcelas= 0;
 	private BigDecimal valorMinimoParcela = BigDecimal.ZERO;
+	public int idadeMinima=0;
 	public Long getId() {
 		return id;
 	}
