@@ -50,14 +50,9 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 			if (cliente == null) {
 				throw new IllegalArgumentException(
 						"Cliente não localizado com este cpf " + solicitacao.getCpfCnpjCliente());
-<<<<<<< HEAD
-			if(cliente.getDataNascimento())
-=======
 			}
->>>>>>> regra-de-idade
 
 			emprestimo.setCliente(cliente);
-			
 			emprestimo.setTaxaJuros(cliente.getTaxaJurosAoMes());
 
 			if (cliente.getTaxaJurosAoMes() == null) {
@@ -292,34 +287,6 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 		if (!busca.isPresent()) {
 			throw new IllegalArgumentException("Emprestimo não encontrado com o id " + idEmprestimo);
 		}
-<<<<<<< HEAD
-
-		Emprestimo emprestimo = busca.get();
-
-		if (emprestimo.getStatus() == StatusEmprestimo.APROVADO) {
-			throw new BusinessException("Somente emprestimos em analise podem ser aprovados manualmente");
-		} 
-
-		if (emprestimo.getStatus() == StatusEmprestimo.REJEITADO) {
-			throw new BusinessException("Somente emprestimos em analise podem ser aprovados manualmente");
-		}
-		
-		if (emprestimo.getStatus() == StatusEmprestimo.EM_ANALISE) {
-			emprestimo.setStatus(StatusEmprestimo.REJEITADO);
-			emprestimo.setObservacao(motivo);
-			repository.save(emprestimo);
-
-			return true;
-		}
-		return false;
-	}
-
-	}
-
-		
-		
-	
-=======
 
 		Emprestimo emprestimo = busca.get();
 		
@@ -351,5 +318,4 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 		return idade;
 	}
 
->>>>>>> regra-de-idade
 }
