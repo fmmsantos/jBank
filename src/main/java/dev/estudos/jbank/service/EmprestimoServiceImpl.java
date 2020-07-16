@@ -292,7 +292,7 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 		if (!busca.isPresent()) {
 			throw new IllegalArgumentException("Emprestimo não encontrado com o id " + idEmprestimo);
 		}
-<<<<<<< HEAD
+
 
 		Emprestimo emprestimo = busca.get();
 
