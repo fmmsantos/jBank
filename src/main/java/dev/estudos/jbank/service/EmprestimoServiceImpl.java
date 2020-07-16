@@ -128,7 +128,7 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 			if (cliente == null)
 				throw new IllegalArgumentException(
 						"Cliente não localizado com este cpf " + solicitacao.getCpfCnpjCliente());
-			
+
 			emprestimo.setCliente(cliente);
 			emprestimo.setTaxaJuros(cliente.getTaxaJurosAoMes());
 
@@ -190,21 +190,20 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 
 	public boolean aprovar(SolicitacaoEmprestimoDTO solicitacao, Emprestimo emprestimo) {
 		Configuracao configuracao = config.getConfiguracao();
-		
+
 		if (emprestimo.getCliente().getDataNascimento() != null) {
 
 			int idade = calcularIdade(emprestimo.getCliente().getDataNascimento(), emprestimo.getCliente().idade);
 
 			if (idade < configuracao.idadeMinima) {
 				emprestimo.setStatus(StatusEmprestimo.REJEITADO);
-				emprestimo.setObservacao("CLIENTE COM IDADE MENOR QUE A MINIMA PERMITIDA: "
-						+ "idade minima: "+configuracao.idadeMinima+" anos," + " idade do cliente: " +idade+" anos." );
+				emprestimo.setObservacao("CLIENTE COM IDADE MENOR QUE A MINIMA PERMITIDA: " + "idade minima: "
+						+ configuracao.idadeMinima + " anos," + " idade do cliente: " + idade + " anos.");
 				return true;
 			}
-			
-			
+
 		}
-		
+
 		Parcela parcela = emprestimo.getParcelas().get(0);
 		if (emprestimo.getCliente().getLimiteCredito().compareTo(solicitacao.getValorSolicitado()) >= 0) {
 			emprestimo.setObservacao("LIMITE DE CRÉDITO ATENDE AO VALOR SOLICITADO");
@@ -241,8 +240,6 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 		return false;
 
 	}
-
-	
 
 	@Override
 	public boolean aprovar(Long idEmprestimo, String motivo) {
@@ -289,9 +286,6 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 		}
 
 		Emprestimo emprestimo = busca.get();
-		
-
-		
 
 		if (emprestimo.getStatus() == StatusEmprestimo.APROVADO) {
 			throw new BusinessException("Somente emprestimos em analise podem ser aprovados manualmente");
@@ -310,6 +304,7 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 		}
 		return false;
 	}
+
 	public Integer calcularIdade(LocalDate dataNascimento, int idade) {
 		LocalDate dataDate = LocalDate.from(dataNascimento);
 		int hoje = FlexibleCalendar.currentDate().getYear();
