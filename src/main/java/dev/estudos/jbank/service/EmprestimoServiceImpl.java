@@ -193,7 +193,7 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 
 		if (emprestimo.getCliente().getDataNascimento() != null) {
 
-			int idade = calcularIdade(emprestimo.getCliente().getDataNascimento(), emprestimo.getCliente().idade);
+			int idade = calcularIdade(emprestimo.getCliente().getDataNascimento());
 
 			if (idade < configuracao.idadeMinima) {
 				emprestimo.setStatus(StatusEmprestimo.REJEITADO);
@@ -305,12 +305,11 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 		return false;
 	}
 
-	public Integer calcularIdade(LocalDate dataNascimento, int idade) {
+	private Integer calcularIdade(LocalDate dataNascimento) {
 		LocalDate dataDate = LocalDate.from(dataNascimento);
 		int hoje = FlexibleCalendar.currentDate().getYear();
-		idade = Math.subtractExact(hoje, dataDate.getYear());
+		int idade = hoje - dataDate.getYear();
 
 		return idade;
 	}
-
 }
