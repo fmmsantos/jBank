@@ -20,6 +20,7 @@ public class Parcela {
 	private BigDecimal valorJuros= BigDecimal.ZERO;
 	private BigDecimal valorTotal= BigDecimal.ZERO;
 	
+	
 	@ManyToOne
 	private Emprestimo emprestimo;
 	

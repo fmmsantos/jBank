@@ -312,4 +312,7 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 
 		return idade;
 	}
+	public Parcela gerenciarParcela() {
+		return null;
+	}
 }
