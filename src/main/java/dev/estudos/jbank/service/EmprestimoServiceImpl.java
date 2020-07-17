@@ -312,4 +312,6 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 
 		return idade;
 	}
+	
+	
 }
