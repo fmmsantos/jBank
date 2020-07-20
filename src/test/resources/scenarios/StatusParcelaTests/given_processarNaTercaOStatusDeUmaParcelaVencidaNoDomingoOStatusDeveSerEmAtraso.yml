@@ -1,0 +1,36 @@
+CONTEXT:
+- _class: dev.estudos.jbank.utils.FlexibleCalendar
+  currentDate: 2020-06-23
+  
+- _class: dev.estudos.jbank.model.Configuracao
+  id: 1
+  taxaJurosPadrao: 2.0
+
+- _class: dev.estudos.jbank.model.Cliente
+  id: 1
+  nome: FRANK SANTOS
+
+- _class: dev.estudos.jbank.model.Emprestimo
+  id: 1
+  cliente:
+    id: 1
+  valorSolicitado: 1000
+    
+- _class: dev.estudos.jbank.model.Parcela
+  numero: 1
+  emprestimo:
+    id: 1
+  dataVencimento: 2020-06-20
+  valorPrincipal: 800
+  valorJuros: 200
+  valorTotal: 1000
+  status: A_VENCER
+
+INPUT:
+  idEmprestimo: 1
+  numParcela: 1
+  
+OUTPUT:
+  _class: dev.estudos.jbank.model.Parcela
+  status: EM_ATRASO  
+   

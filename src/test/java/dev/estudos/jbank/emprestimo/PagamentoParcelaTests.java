@@ -1,12 +1,17 @@
 package dev.estudos.jbank.emprestimo;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import dev.estudos.jbank.model.PagamentoParcela;
 import dev.estudos.jbank.repository.PagamentoRepository;
 import dev.estudos.jbank.service.PagamentoParcelaService;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * O objetivo dessa classe eh testar os cenarios de pagamento de emprestimo.
@@ -24,6 +29,7 @@ import dev.estudos.jbank.service.PagamentoParcelaService;
   * parcela vencida no domingo com pagamento na terça com o valor da parcela + juros + multa (deve permitir)
  *
  */
+@SpringBootTest()
 public class PagamentoParcelaTests {
 	
 	@Autowired
@@ -35,6 +41,7 @@ public class PagamentoParcelaTests {
 	 * cenario de teste para pagamento de parcela que esteja em dia, nao vai cobrar juros e multa
 	 * o cliente vai pagar o mesmo valor da parcela, e o sistema deve aceitar o pagamento
 	 */
+	@Test
 	public void given_parcelaAVencerComOMesmoValorDaParcela_then_devePagarComSucesso() {
 		
 		// cliente quer pagar a parcela 3 do emprestimo 100
@@ -55,7 +62,7 @@ public class PagamentoParcelaTests {
 		assertNotNull(pagamento.getDataHoraPagamento(), "A data/hora de pagamento deveria ser preenchida");
 		
 		// Verifica se o pagamento foi registrado no banco de dados
-		PagamentoParcela salvo = pagamentoRepository.getById(pagamento.getId()).orElse(null);
+		Optional<PagamentoParcela> salvo = pagamentoRepository.findById(pagamento.getId());
 		
 		assertNotNull(salvo, "O pagamento deveria ser registrado no banco de dados");		
 	}

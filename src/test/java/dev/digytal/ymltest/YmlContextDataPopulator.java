@@ -11,6 +11,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -26,6 +30,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class YmlContextDataPopulator {
+	
+	static Logger LOGGER = LoggerFactory.getLogger(YmlContextDataPopulator.class);
 	
 	ApplicationContext applicationContext;
 	ObjectMapper mapper;
@@ -78,6 +84,23 @@ public class YmlContextDataPopulator {
 		setStaticsData(staticsData, classes);
 		
 		ResourceReader resourceReader = new JsonResourceReader(mapper, entitiesData);
+		
+		try {
+			List<Object> entities = (List<Object>) resourceReader.readFrom(null, getClass().getClassLoader());
+			DataPopulator dataPopulator = applicationContext.getBean(DataPopulator.class);
+			
+			LOGGER.info("Populating data: " + entities.size());
+			
+			for (Object entity : entities) {
+				LOGGER.info("Populating entity: " + entity.getClass().getName());
+				
+				dataPopulator.populate(entity);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		
+		/*
 		ResourceReaderRepositoryPopulator populator = new ResourceReaderRepositoryPopulator(resourceReader);
 		
 		Resource resource = new ClassPathResource("");
@@ -85,6 +108,8 @@ public class YmlContextDataPopulator {
 		
 		Repositories repositories = new Repositories(applicationContext);
 		populator.populate(repositories);
+		*/
+		
 	}
 
 	private void setStaticsData(List<ObjectNode> staticsData, Map<Integer, Class<?>> classes) {

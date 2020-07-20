@@ -2,9 +2,10 @@ package dev.estudos.jbank.repository;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 import dev.estudos.jbank.model.Configuracao;
-
+@Repository
 public interface ConfiguracaoRepository extends CrudRepository<Configuracao, Long>{
 
 	

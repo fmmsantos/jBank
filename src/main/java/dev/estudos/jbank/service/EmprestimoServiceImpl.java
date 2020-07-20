@@ -9,8 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.id.IncrementGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import dev.estudos.jbank.dto.SolicitacaoEmprestimoDTO;
 import dev.estudos.jbank.exception.BusinessException;
@@ -38,7 +40,7 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 
 	@Autowired
 	private ConfiguracaoRepository config;
-	
+
 	@Autowired
 	private ParcelaRepository parcelaRepository;
 
@@ -179,9 +181,8 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 						emprestimo.getTotalJuros().divide(new BigDecimal(solicitacao.getQtdParcelas()), 2));
 				parcela.setValorTotal(emprestimo.getTotalAPagar().divide(new BigDecimal(solicitacao.getQtdParcelas()),
 						2, RoundingMode.HALF_EVEN));
-				parcela.setStatusParcela(StatusParcela.A_VENCER);
+				parcela.setStatus(StatusParcela.A_VENCER);
 				parcelas.add(parcela);
-				
 
 			}
 			emprestimo.setParcelas(parcelas);
@@ -194,7 +195,7 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 		}
 
 		repository.save(emprestimo);
-		
+
 		return emprestimo;
 	}
 
@@ -322,38 +323,45 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 
 		return idade;
 	}
-	@Override
-	public Parcela processarStatusParcela(Long idEmprestimo,int numeroParcela) {
-		
-	
-		Optional<Emprestimo> emprestimo = repository.findById(idEmprestimo);
-		Parcela parcela = parcelaRepository.findByNumero(numeroParcela);
-		List<Parcela> parcelas = emprestimo.get().getParcelas();
-		for(Parcela parc:parcelas) {
-			parc = parcela;
 
-			if(parc.getDataVencimento().isBefore(FlexibleCalendar.currentDate())) {
-				parc.setStatusParcela(StatusParcela.EM_ATRASO);	
-			
+	@Override
+	@Transactional
+	public Parcela processarStatusParcela(Long idEmprestimo, int numeroParcela) {
+
+		Optional<Emprestimo> emprestimo = repository.findById(idEmprestimo);
+		LocalDate incrementarData = null;
+
+		Parcela parcela = parcelaRepository.findByEmprestimoIdAndNumero(idEmprestimo, numeroParcela);
+		if (!emprestimo.isPresent()) {
+			throw new IllegalArgumentException("Emprestimo nao encontrado com o id " + idEmprestimo);
 		}
-			if(parc.getDataVencimento().getDayOfWeek() == DayOfWeek.SUNDAY || parc.getDataVencimento().getDayOfWeek() == DayOfWeek.SATURDAY) {
-				parc.setStatusParcela(StatusParcela.A_VENCER);	
-				
+
+		if (parcela == null) {
+			throw new IllegalArgumentException("Parcela nao encontrado com o id ");
+		}
+
+		if (parcela.getDataVencimento().isBefore(FlexibleCalendar.currentDate())) {
+			parcela.setStatus(StatusParcela.EM_ATRASO);
+
+		}
+		if (parcela.getDataVencimento().getDayOfWeek() == DayOfWeek.SATURDAY
+				|| parcela.getDataVencimento().getDayOfWeek() == DayOfWeek.SUNDAY) {
+			incrementarData = parcela.getDataVencimento().plusDays(2);
+			parcela.setDataVencimento(incrementarData);
+			if (parcela.getDataVencimento().isBefore(FlexibleCalendar.currentDate())) {
+				parcela.setStatus(StatusParcela.EM_ATRASO);
+			} else {
+				parcela.setStatus(StatusParcela.A_VENCER);
 			}
-			parcelas.add(parc);
-			
-			
 		}
-		parcelaRepository.save(parcela);
-	
+
 		return parcela;
 	}
-
-	
 
 	@Override
 	public Parcela getParcela(Long idEmprestimo, int numParcela) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 }

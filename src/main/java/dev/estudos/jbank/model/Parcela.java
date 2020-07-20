@@ -19,7 +19,8 @@ public class Parcela {
 	private BigDecimal valorPrincipal= BigDecimal.ZERO;
 	private BigDecimal valorJuros= BigDecimal.ZERO;
 	private BigDecimal valorTotal= BigDecimal.ZERO;
-	private StatusParcela statusParcela;
+	// vc jah está no objeto parcela, nesse caso, o nome do atributo nao precisa repetir o nome da classe.
+	private StatusParcela status;
 	
 	
 	@ManyToOne
@@ -27,11 +28,11 @@ public class Parcela {
 	
 	
 
-	public StatusParcela getStatusParcela() {
-		return statusParcela;
+	public StatusParcela getStatus() {
+		return status;
 	}
-	public void setStatusParcela(StatusParcela statusParcela) {
-		this.statusParcela = statusParcela;
+	public void setStatus(StatusParcela statusParcela) {
+		this.status = statusParcela;
 	}
 	public Emprestimo getEmprestimo() {
 		return emprestimo;

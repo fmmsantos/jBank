@@ -1,9 +1,7 @@
 package dev.estudos.jbank.emprestimo;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.math.BigDecimal;
-import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +13,7 @@ import dev.estudos.jbank.dto.SolicitacaoEmprestimoDTO;
 import dev.estudos.jbank.model.Emprestimo;
 import dev.estudos.jbank.model.Parcela;
 import dev.estudos.jbank.model.StatusParcela;
-import dev.estudos.jbank.repository.EmprestimoRepository;
+import dev.estudos.jbank.repository.ParcelaRepository;
 import dev.estudos.jbank.service.EmprestimoService;
 
 @SpringBootTest()
@@ -26,9 +24,12 @@ public class StatusParcelaTests {
 
 	@Autowired
 	EmprestimoService emprestimoService;
-
+	
 	@Autowired
-	EmprestimoRepository emprestimoRepository;
+	ParcelaRepository parcelaRepository;
+
+	Long idEmprestimo;
+	Integer numParcela;
 	
 	/**
 	 * Para testar esse cenario eu preciso contratar um emprestimo.
@@ -50,36 +51,51 @@ public class StatusParcelaTests {
 	 */
 	@Test
 	void given_umaParcelaVencida_then_deveAtualizarStatusParaEmAtraso() {
-		YmlTestCase testCase = testCaseLoader.loadOfMethodName();
-		
-		// Pode ser assim
-		Long idEmprestimo = testCase.getInputArgs().getLong("idEmprestimo");
-		Integer numParcela = testCase.getInputArgs().getInt("numParcela");
-		
-		// aqui nao tem valor, o meu objetivo é calcular o status da parcela. se ela está A VENCER, EM_ATRASO
-		Parcela parcela = emprestimoService.processarStatusParcela(idEmprestimo, numParcela);
-		
-		testCase.assertOutput(parcela);
+		execTestCase();
 		
 		// verifica se o status da parcela foi atualizado no banco de dados
-		Parcela parcelaSalva = emprestimoRepository.getParcela(idEmprestimo, numParcela);
+		Parcela parcelaSalva = buscarParcelaSalva();
 		
-		assertNotNull(parcela, "A parcela deveria existir no banco de dados") ;
-		assertEquals(StatusParcela.EM_ATRASO, parcela.getStatusParcela());
+		assertNotNull(parcelaSalva, "A parcela deveria existir no banco de dados") ;
+		assertEquals(StatusParcela.EM_ATRASO, parcelaSalva.getStatus(), "A parcela salva deveria está EM ATRASO");
 	}
 
 	@Test
 	void given_processarNaSegundaOStatusDeUmaParcelaVencidaNoSabadoOStatusDeveSerAvencer() {
 		execTestCase();
+		
+		// verifica se o status da parcela foi atualizado no banco de dados
+		Parcela parcelaSalva = buscarParcelaSalva();
+		
+		assertNotNull(parcelaSalva, "A parcela deveria existir no banco de dados") ;
+		assertEquals(StatusParcela.A_VENCER, parcelaSalva.getStatus(), "A parcela salva deveria está A_VENCER");
 	}
 
 	@Test
 	void given_processarNaTercaOStatusDeUmaParcelaVencidaNoDomingoOStatusDeveSerEmAtraso() {
 		execTestCase();
+		
+		// verifica se o status da parcela foi atualizado no banco de dados
+		Parcela parcelaSalva = buscarParcelaSalva();
+		
+		assertNotNull(parcelaSalva, "A parcela deveria existir no banco de dados") ;
+		assertEquals(StatusParcela.EM_ATRASO, parcelaSalva.getStatus(), "A parcela salva deveria está EM ATRASO");
 	}
 
 	private void execTestCase() {
-
+		YmlTestCase testCase = testCaseLoader.loadOfMethodName();
+		
+		idEmprestimo = testCase.getInputArgs().getLong("idEmprestimo");
+		numParcela = testCase.getInputArgs().getInt("numParcela");
+		
+		// aqui nao tem valor, o meu objetivo é calcular o status da parcela. se ela está A VENCER, EM_ATRASO
+		Parcela parcela = emprestimoService.processarStatusParcela(idEmprestimo, numParcela);
+		
+		testCase.assertOutput(parcela);
+	}
+	
+	private Parcela buscarParcelaSalva() {
+		return parcelaRepository.findByEmprestimoIdAndNumero(idEmprestimo, numParcela);
 	}
 
 	private void execTestCaseWithError() {

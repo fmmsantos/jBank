@@ -13,6 +13,7 @@ import dev.estudos.jbank.model.Emprestimo;
 import dev.estudos.jbank.model.PagamentoParcela;
 import dev.estudos.jbank.model.Parcela;
 import dev.estudos.jbank.model.StatusParcela;
+import dev.estudos.jbank.repository.ConfiguracaoRepository;
 import dev.estudos.jbank.repository.EmprestimoRepository;
 import dev.estudos.jbank.repository.PagamentoRepository;
 import dev.estudos.jbank.repository.ParcelaRepository;
@@ -26,7 +27,7 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 	@Autowired
 	private EmprestimoRepository repository;
 	@Autowired
-	private Configuracao confRepository;
+	private ConfiguracaoRepository confRepository;
 	@Autowired
 	private PagamentoRepository pagamentoRepo;
 	
@@ -43,44 +44,42 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 		Long idEmprestimo = Long.parseLong(emprestimo);
 
 		Optional<Emprestimo> empres = repository.findById(idEmprestimo);
+		
+		Parcela parcela = parcelaRepository.findByEmprestimoIdAndNumero(idEmprestimo, numero);
+
 		PagamentoParcela pagamento = new PagamentoParcela();
-		List<Parcela> parcelas = empres.get().getParcelas();
-		for (Parcela parc : parcelas) {
-			if (parc.getNumero() == numero && parc.getStatusParcela() != StatusParcela.PAGO) {
+		
+	
+			if (parcela.getNumero() == numero && parcela.getStatus() != StatusParcela.PAGO) {
 
 				pagamento.setDataHoraPagamento(FlexibleCalendar.currentDateTime());
 				pagamento.setIdEmprestimo(idEmprestimo);
 				pagamento.setNumeroParcela(parcelaNumero);
-				pagamento.setValorParcela(parc.getValorTotal());
-
-				if (parc.getStatusParcela() == StatusParcela.EM_ATRASO) {
-					pagamento.setValorJuros(confRepository.getJurosDeMora());
-					pagamento.setValorMulta(confRepository.getMultaDeMora());
+				pagamento.setValorParcela(parcela.getValorTotal());
+				Configuracao configuracao = confRepository.getConfiguracao(); 
+				if (parcela.getStatus() == StatusParcela.EM_ATRASO) {
+					pagamento.setValorJuros(configuracao.getJurosDeMora());
+					pagamento.setValorMulta(configuracao.getMultaDeMora());
 					BigDecimal totalApagar = pagamento.getValorParcela().add(pagamento.getValorJuros())
 							.add(pagamento.getValorMulta());
 					pagamento.setValorPago(totalApagar);
 					
 
 				}
-				if (pagamento.getValorPago().compareTo(valorPago) < 0) 
+				if (parcela.getStatus() == StatusParcela.EM_ATRASO && pagamento.getValorPago().compareTo(valorPago) < 0) 
 					
 					throw new PagamentoNaoAceitoException("VALOR DO PAGAMENTO MENOR QUE O VALOR DA PARCELA");
 
 				}
-			else {
+			 	if(parcela.getStatus() == StatusParcela.A_VENCER) {
 				
 				pagamento.getDataHoraPagamento();
-				pagamento.getValorPago();
+				pagamento.setValorPago(valorPago);
 				pagamentoRepo.save(pagamento);
 				
-				
-			}
-				
-		}
-		
-		
-		
-
+			 	}
+			
+			
 		return pagamento;
 	}
 
