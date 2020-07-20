@@ -2,6 +2,7 @@ package dev.estudos.jbank.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,14 +14,17 @@ import org.springframework.stereotype.Service;
 
 import dev.estudos.jbank.dto.SolicitacaoEmprestimoDTO;
 import dev.estudos.jbank.exception.BusinessException;
+import dev.estudos.jbank.exception.PagamentoNaoAceitoException;
 import dev.estudos.jbank.model.Cliente;
 import dev.estudos.jbank.model.Configuracao;
 import dev.estudos.jbank.model.Emprestimo;
 import dev.estudos.jbank.model.Parcela;
 import dev.estudos.jbank.model.StatusEmprestimo;
+import dev.estudos.jbank.model.StatusParcela;
 import dev.estudos.jbank.repository.ClienteRepository;
 import dev.estudos.jbank.repository.ConfiguracaoRepository;
 import dev.estudos.jbank.repository.EmprestimoRepository;
+import dev.estudos.jbank.repository.ParcelaRepository;
 import dev.estudos.jbank.utils.FlexibleCalendar;
 import net.bytebuddy.build.Plugin.Engine.Source.Empty;
 
@@ -34,6 +38,9 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 
 	@Autowired
 	private ConfiguracaoRepository config;
+	
+	@Autowired
+	private ParcelaRepository parcelaRepository;
 
 	@Override
 	public Emprestimo simular(SolicitacaoEmprestimoDTO solicitacao) {
@@ -172,7 +179,9 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 						emprestimo.getTotalJuros().divide(new BigDecimal(solicitacao.getQtdParcelas()), 2));
 				parcela.setValorTotal(emprestimo.getTotalAPagar().divide(new BigDecimal(solicitacao.getQtdParcelas()),
 						2, RoundingMode.HALF_EVEN));
+				parcela.setStatusParcela(StatusParcela.A_VENCER);
 				parcelas.add(parcela);
+				
 
 			}
 			emprestimo.setParcelas(parcelas);
@@ -185,6 +194,7 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 		}
 
 		repository.save(emprestimo);
+		
 		return emprestimo;
 	}
 
@@ -312,7 +322,38 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 
 		return idade;
 	}
-	public Parcela gerenciarParcela() {
+	@Override
+	public Parcela processarStatusParcela(Long idEmprestimo,int numeroParcela) {
+		
+	
+		Optional<Emprestimo> emprestimo = repository.findById(idEmprestimo);
+		Parcela parcela = parcelaRepository.findByNumero(numeroParcela);
+		List<Parcela> parcelas = emprestimo.get().getParcelas();
+		for(Parcela parc:parcelas) {
+			parc = parcela;
+
+			if(parc.getDataVencimento().isBefore(FlexibleCalendar.currentDate())) {
+				parc.setStatusParcela(StatusParcela.EM_ATRASO);	
+			
+		}
+			if(parc.getDataVencimento().getDayOfWeek() == DayOfWeek.SUNDAY || parc.getDataVencimento().getDayOfWeek() == DayOfWeek.SATURDAY) {
+				parc.setStatusParcela(StatusParcela.A_VENCER);	
+				
+			}
+			parcelas.add(parc);
+			
+			
+		}
+		parcelaRepository.save(parcela);
+	
+		return parcela;
+	}
+
+	
+
+	@Override
+	public Parcela getParcela(Long idEmprestimo, int numParcela) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }

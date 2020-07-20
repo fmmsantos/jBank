@@ -17,6 +17,9 @@ public class Configuracao {
 	private Integer qtdMaximaParcelas= 0;
 	private BigDecimal valorMinimoParcela = BigDecimal.ZERO;
 	public int idadeMinima=0;
+	private BigDecimal jurosDeMora= BigDecimal.valueOf(0.01);
+	private BigDecimal multaDeMora= BigDecimal.valueOf(0.02);
+	
 	public Long getId() {
 		return id;
 	}
@@ -29,6 +32,7 @@ public class Configuracao {
 	public void setTaxaJurosPadrao(BigDecimal taxaJurosPadrao) {
 		this.taxaJurosPadrao = taxaJurosPadrao;
 	}
+	
 	public Integer getQtdMaximaParcelas() {
 		return qtdMaximaParcelas;
 	}
@@ -41,6 +45,19 @@ public class Configuracao {
 	public void setValorMinimoParcela(BigDecimal valorMinimoParcela) {
 		this.valorMinimoParcela = valorMinimoParcela;
 	}
+	public BigDecimal getJurosDeMora() {
+		return jurosDeMora;
+	}
+	public void setJurosDeMora(BigDecimal jurosDeMora) {
+		this.jurosDeMora = jurosDeMora;
+	}
+	public BigDecimal getMultaDeMora() {
+		return multaDeMora;
+	}
+	public void setMultaDeMora(BigDecimal multaDeMora) {
+		this.multaDeMora = multaDeMora;
+	}
+	
 	
 
 }

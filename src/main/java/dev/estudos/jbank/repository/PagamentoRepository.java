@@ -4,16 +4,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import dev.estudos.jbank.model.Emprestimo;
+import dev.estudos.jbank.model.PagamentoParcela;
 import dev.estudos.jbank.model.Parcela;
-import dev.estudos.jbank.model.StatusEmprestimo;
 
 @Repository
-public interface EmprestimoRepository extends CrudRepository<Emprestimo, Long> {
+public interface PagamentoRepository extends CrudRepository<PagamentoParcela, Long>{
 	
 	
-	
-	
-	
+
 
 }

@@ -19,12 +19,20 @@ public class Parcela {
 	private BigDecimal valorPrincipal= BigDecimal.ZERO;
 	private BigDecimal valorJuros= BigDecimal.ZERO;
 	private BigDecimal valorTotal= BigDecimal.ZERO;
+	private StatusParcela statusParcela;
 	
 	
 	@ManyToOne
 	private Emprestimo emprestimo;
 	
 	
+
+	public StatusParcela getStatusParcela() {
+		return statusParcela;
+	}
+	public void setStatusParcela(StatusParcela statusParcela) {
+		this.statusParcela = statusParcela;
+	}
 	public Emprestimo getEmprestimo() {
 		return emprestimo;
 	}

@@ -1,0 +1,35 @@
+# O objetivo desse teste é verificar o status das parcelas depois de uma contratacao de emprestimo.
+# Logo, eu nao preciso verificar valores da parcela, nem do emprestimo, só o status da parcela
+CONTEXT:
+- _class: dev.estudos.jbank.model.Configuracao
+  id: 1
+  taxaJurosPadrao: 2.0
+
+- _class: dev.estudos.jbank.model.Cliente
+  id: 2
+  nome: FRANCISCO COELHO DOS SANTOS
+  cpfCnpj: 21580383300
+  rendaMensal: 10000
+
+INPUT:
+  _class: dev.estudos.jbank.dto.SolicitacaoEmprestimoDTO
+  cpfCnpjCliente: 21580383300
+  valorSolicitado: 1000
+  qtdParcelas: 3
+  
+OUTPUT:
+  _class: dev.estudos.jbank.model.Emprestimo
+  status: APROVADO
+  parcelas:
+  # Parcela 1
+  - numero: 1
+    statusParcela: A_VENCER
+   
+  # Parcela 2
+  - numero: 2
+    statusParcela: A_VENCER
+   
+  # Parcela 3
+  - numero: 3    
+    statusParcela: A_VENCER
+   

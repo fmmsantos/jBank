@@ -1,0 +1,28 @@
+# O objetivo desse teste eh processar uma parcela já existente no sistema e atualizar o status dela para EM_ATRASO
+# Vamos simular um cliente, um emprestimo com id 100, que tem uma parcela vencida no dia 2020-05-15, no caso ela vai está em atraso.
+CONTEXT:
+- _class: dev.estudos.jbank.model.Configuracao
+  id: 1
+  taxaJurosPadrao: 2.0
+
+- _class: dev.estudos.jbank.model.Cliente
+  id: 1
+  nome: FRANK SANTOS
+
+- _class: dev.estudos.jbank.model.Emprestimo
+  id: 100
+  cliente:
+    id: 1
+  parcelas:
+  - numero: 1
+    dataVencimento: 2020-05-15
+    status: A_VENCER
+
+INPUT:
+  idEmprestimo: 100
+  numParcela: 1
+  
+OUTPUT:
+  _class: dev.estudos.jbank.model.Parcela
+  status: EM_ATRASO  
+   
