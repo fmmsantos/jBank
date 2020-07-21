@@ -258,7 +258,12 @@ public class YmlTestCase {
 		
 		JsonNode jsonValue = expected.get(fieldName);
 		
-		Object expectedValue = getRawValue(jsonValue, fieldType, context);
+		Object expectedValue;
+		try {
+			expectedValue = getRawValue(jsonValue, fieldType, context);
+		} catch (Exception e) {
+			throw new IllegalStateException("Error reading field " + context.fullFieldName + ": " + e.toString(), e);
+		}
 		
 		String message = "Field not equals: " + context.fullFieldName;
 		
@@ -310,8 +315,8 @@ public class YmlTestCase {
 		JsonNodeType nodeType = jsonValue.getNodeType();
 		if (nodeType == JsonNodeType.NULL) {
 			return null;
-		}
-		if (nodeType == JsonNodeType.NUMBER || Number.class.isAssignableFrom(type)) {
+		}		
+		if (Number.class.isAssignableFrom(type)) {
 			return getNumberValue(jsonValue, type);
 		}
 		if (type.isEnum()) {
@@ -325,7 +330,7 @@ public class YmlTestCase {
 			return LocalDate.parse(jsonValue.asText());
 		}
 		
-		if (nodeType == JsonNodeType.STRING) {
+		if (nodeType == JsonNodeType.STRING || type == String.class) {
 			return jsonValue.asText();
 		}
 		if (nodeType == JsonNodeType.BOOLEAN) {

@@ -3,6 +3,7 @@ package dev.estudos.jbank.model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,8 +21,8 @@ public class PagamentoParcela {
 	private BigDecimal valorPago;
 	private LocalDate dataPagamento;
 	private BigDecimal valorParcela;
-	private BigDecimal valorJuros;
-	private BigDecimal valorMulta;
+	private BigDecimal valorJuros = BigDecimal.ZERO;
+	private BigDecimal valorMulta = BigDecimal.ZERO;
 	private LocalDateTime dataHoraPagamento;
 	@OneToOne
 	private Parcela parcela;
@@ -89,6 +90,22 @@ public class PagamentoParcela {
 	public void setDataPagamento(LocalDate dataPagamento) {
 		this.dataPagamento = dataPagamento;
 	}
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof PagamentoParcela)) {
+			return false;
+		}
+		PagamentoParcela other = (PagamentoParcela) obj;
+		return Objects.equals(id, other.id);
+	}
+	
 	
 	
 

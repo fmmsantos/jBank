@@ -131,6 +131,9 @@ public class Emprestimo {
 		return true;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return String.format("Emprestimo(id=%s)", id);
+	}
 	
 }

@@ -1,13 +1,13 @@
 CONTEXT:
 - _class: dev.estudos.jbank.model.Cliente
-  id: 1
+  id: 2
   nome: FRANCISCO COELHO DOS SANTOS
   cpfCnpj: 21580383300  
   
 - _class: dev.estudos.jbank.model.Emprestimo
-  id: 1
+  id: 2
   cliente:
-    id: 1    
+    id: 2  
   valorSolicitado: 5000
   taxaJuros: 2.0
   totalJuros: 100
@@ -15,7 +15,7 @@ CONTEXT:
   status: APROVADO
 
 INPUT:
-  idEmprestimo: 1 
+  idEmprestimo: 2
   motivo: TESTE DE REJEICAO MANUAL DE EMPRESTIMO JÁ APROVADO
   
 OUTPUT:

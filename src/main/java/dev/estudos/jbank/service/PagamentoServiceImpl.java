@@ -30,7 +30,6 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 	private ConfiguracaoRepository confRepository;
 	@Autowired
 	private PagamentoRepository pagamentoRepo;
-	
 
 	@Override
 	public PagamentoParcela pagar(String numeroDocumento, BigDecimal valorPago) {
@@ -44,42 +43,53 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 		Long idEmprestimo = Long.parseLong(emprestimo);
 
 		Optional<Emprestimo> empres = repository.findById(idEmprestimo);
-		
+
 		Parcela parcela = parcelaRepository.findByEmprestimoIdAndNumero(idEmprestimo, numero);
+		
+		// vc tem que trabalhar com excecoes para indicar o que acontece no codigoo
+		// pq NullPointerexception ninguem sabe o que eh. 
+		// vc tem que mandar mensagens explicativas
+		if (parcela == null) {
+			throw new IllegalArgumentException("Parcela " + numero + " nao encontrada para o emprestimo " + idEmprestimo);
+		}
 
 		PagamentoParcela pagamento = new PagamentoParcela();
-		
-	
-			if (parcela.getNumero() == numero && parcela.getStatus() != StatusParcela.PAGO) {
 
-				pagamento.setDataHoraPagamento(FlexibleCalendar.currentDateTime());
-				pagamento.setIdEmprestimo(idEmprestimo);
-				pagamento.setNumeroParcela(parcelaNumero);
-				pagamento.setValorParcela(parcela.getValorTotal());
-				Configuracao configuracao = confRepository.getConfiguracao(); 
-				if (parcela.getStatus() == StatusParcela.EM_ATRASO) {
-					pagamento.setValorJuros(configuracao.getJurosDeMora());
-					pagamento.setValorMulta(configuracao.getMultaDeMora());
-					BigDecimal totalApagar = pagamento.getValorParcela().add(pagamento.getValorJuros())
-							.add(pagamento.getValorMulta());
-					pagamento.setValorPago(totalApagar);
-					
+		if (parcela.getNumero() == numero && parcela.getStatus() != StatusParcela.PAGO) {
 
-				}
-				if (parcela.getStatus() == StatusParcela.EM_ATRASO && pagamento.getValorPago().compareTo(valorPago) < 0) 
-					
-					throw new PagamentoNaoAceitoException("VALOR DO PAGAMENTO MENOR QUE O VALOR DA PARCELA");
+			pagamento.setDataPagamento(FlexibleCalendar.currentDate());
+			pagamento.setIdEmprestimo(idEmprestimo);
+			pagamento.setNumeroParcela(parcelaNumero);
+			pagamento.setValorParcela(parcela.getValorTotal());
+			pagamento.setParcela(parcela);
+			pagamento.getParcela().setNumero(numero);
+			Configuracao configuracao = confRepository.getConfiguracao();
+			if (parcela.getStatus() == StatusParcela.EM_ATRASO) {
+				pagamento.setValorJuros(configuracao.getJurosDeMora());
+				pagamento.setValorMulta(configuracao.getMultaDeMora());
+				BigDecimal totalApagar = pagamento.getValorParcela().add(pagamento.getValorJuros())
+						.add(pagamento.getValorMulta());
+				pagamento.setValorPago(totalApagar);
 
-				}
-			 	if(parcela.getStatus() == StatusParcela.A_VENCER) {
-				
-				pagamento.getDataHoraPagamento();
-				pagamento.setValorPago(valorPago);
-				pagamentoRepo.save(pagamento);
-				
-			 	}
-			
-			
+			}
+			if (parcela.getStatus() == StatusParcela.EM_ATRASO && pagamento.getValorPago().compareTo(valorPago) < 0)
+
+				throw new PagamentoNaoAceitoException("VALOR DO PAGAMENTO MENOR QUE O VALOR DA PARCELA");
+
+		}
+		if (parcela.getStatus() == StatusParcela.A_VENCER) {
+			pagamento.getNumeroParcela();
+			pagamento.getDataPagamento();
+			pagamento.getValorParcela();
+			pagamento.getValorMulta();
+			pagamento.getValorJuros();
+			pagamento.getIdEmprestimo();
+			pagamento.getParcela();
+			pagamento.getParcela().getNumero();
+			pagamentoRepo.save(pagamento);
+
+		}
+
 		return pagamento;
 	}
 

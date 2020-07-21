@@ -2,6 +2,7 @@ package dev.estudos.jbank.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Objects;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -79,7 +80,26 @@ public class Parcela {
 	public void setValorTotal(BigDecimal valorTotal) {
 		this.valorTotal = valorTotal;
 	}
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof Parcela)) {
+			return false;
+		}
+		Parcela other = (Parcela) obj;
+		return Objects.equals(id, other.id);
+	}
 	
-	
+	// sempre que vc contruir uma entidade, implementa os metodos: hashCode, equals e toString
+	@Override
+	public String toString() {
+		return String.format("Parcela(id=%s, numero=%s, emprestimo=%s)", id, numero, emprestimo);
+	}
 
 }
