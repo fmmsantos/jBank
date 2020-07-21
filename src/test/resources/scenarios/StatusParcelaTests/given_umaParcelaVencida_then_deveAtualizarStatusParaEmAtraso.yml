@@ -13,20 +13,18 @@ CONTEXT:
   id: 1
   nome: FRANK SANTOS
 
-- _class: dev.estudos.jbank.model.Emprestimo
+- _table: Emprestimo
   id: 100
-  cliente:
-    id: 1
-  valorSolicitado: 1000
-    
-- _class: dev.estudos.jbank.model.Parcela
+  cliente_id: 1
+  valor_solicitado: 1000
+  
+- _table: Parcela
   numero: 1
-  emprestimo:
-    id: 100
-  dataVencimento: 2020-05-14
-  valorPrincipal: 800
-  valorJuros: 200
-  valorTotal: 1000
+  emprestimo_id: 100
+  data_vencimento: 2020-05-14
+  valor_principal: 800
+  valor_juros: 200
+  valor_total: 1000
   status: A_VENCER
 
 INPUT:

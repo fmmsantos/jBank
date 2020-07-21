@@ -10,17 +10,13 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.persistence.EntityManager;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.repository.init.ResourceReader;
-import org.springframework.data.repository.init.ResourceReaderRepositoryPopulator;
-import org.springframework.data.repository.support.Repositories;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 
@@ -59,14 +55,16 @@ public class YmlContextDataPopulator {
 		int arraySize = arrayNode.size();
 		for (int i = 0; i < arraySize; i++) {
 			ObjectNode objNode = (ObjectNode) arrayNode.get(i);
+			
 			if (!objNode.has("_class")) {
-				throw new IllegalStateException("Context Data item has no _class attribute");
+				// throw new IllegalStateException("Context Data item has no _class attribute");
+				continue;
 			}
 			String className = objNode.get("_class").asText();
 			
 			try {
 				Class<?> itemClass = Class.forName(className);
-				
+								
 				boolean isStatic = Modifier.isAbstract(itemClass.getModifiers()) || objNode.has("_static");
 				
 				if (isStatic) {
@@ -83,24 +81,9 @@ public class YmlContextDataPopulator {
 		
 		setStaticsData(staticsData, classes);
 		
+		/*
 		ResourceReader resourceReader = new JsonResourceReader(mapper, entitiesData);
 		
-		try {
-			List<Object> entities = (List<Object>) resourceReader.readFrom(null, getClass().getClassLoader());
-			DataPopulator dataPopulator = applicationContext.getBean(DataPopulator.class);
-			
-			LOGGER.info("Populating data: " + entities.size());
-			
-			for (Object entity : entities) {
-				LOGGER.info("Populating entity: " + entity.getClass().getName());
-				
-				dataPopulator.populate(entity);
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		
-		/*
 		ResourceReaderRepositoryPopulator populator = new ResourceReaderRepositoryPopulator(resourceReader);
 		
 		Resource resource = new ClassPathResource("");
@@ -108,8 +91,30 @@ public class YmlContextDataPopulator {
 		
 		Repositories repositories = new Repositories(applicationContext);
 		populator.populate(repositories);
-		*/
 		
+		*/
+		populateData(entitiesData);
+	}
+
+	private void populateData(ArrayNode tableData) {
+		try {
+			DataPopulator dataPopulator = applicationContext.getBean(DataPopulator.class);
+			
+			LOGGER.info("Populating entity/table data: " + tableData.size());
+			
+			Iterator<JsonNode> iterator = tableData.iterator();
+			while (iterator.hasNext()) {
+				ObjectNode dataNode = (ObjectNode) iterator.next();
+				String table = dataNode.path("_table").asText();
+				String entity = dataNode.path("_class").asText();
+				
+				LOGGER.info("Populating entity/table: " + Objects.toString(entity, table));
+				
+				dataPopulator.populate(dataNode);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private void setStaticsData(List<ObjectNode> staticsData, Map<Integer, Class<?>> classes) {

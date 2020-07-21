@@ -21,7 +21,7 @@ public class YmlTestCaseConfiguration {
 	
 	@Bean
 	public DataPopulator dataPopulator(EntityManager em) {
-		return new DataPopulator(em);
+		return new DataPopulator(YmlObjectMapperFactory.getYamlMapper(), em);
 	}
 	
 }
