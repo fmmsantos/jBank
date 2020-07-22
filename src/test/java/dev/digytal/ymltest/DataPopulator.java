@@ -8,6 +8,8 @@ import java.util.stream.StreamSupport;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.Table;
+import javax.persistence.metamodel.EntityType;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +35,31 @@ public class DataPopulator {
 		} else if (objectNode.has("_table")) {
 			populateTable(objectNode);
 		}
+	}
+	
+	@Transactional
+	public void truncate(Class<?> entityClass) {
+		String tableName = entityClass.getSimpleName();
+		
+		if (entityClass.isAnnotationPresent(Table.class)) {			
+			Table table = entityClass.getAnnotation(Table.class);
+			if (table.name().length() > 0) {
+				tableName = table.name();
+			}
+			if (table.schema().length() > 0) {
+				tableName = table.schema() + "." + tableName;
+			}
+		} else {
+			tableName = String.join("_", tableName.split("(?=\\p{Upper})"));
+		}
+			
+		// entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE");
+		
+		entityManager.createNativeQuery(
+			"TRUNCATE TABLE " + tableName + " RESTART IDENTITY"
+		).executeUpdate();
+		
+		// entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE");
 	}
 	
 	protected void populateEntity(ObjectNode objectNode) {

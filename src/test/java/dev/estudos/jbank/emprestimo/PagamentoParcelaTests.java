@@ -1,21 +1,22 @@
 package dev.estudos.jbank.emprestimo;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.math.BigDecimal;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 import dev.digytal.ymltest.YmlTestCase;
 import dev.digytal.ymltest.YmlTestCaseLoader;
 import dev.estudos.jbank.model.PagamentoParcela;
-import dev.estudos.jbank.model.Parcela;
 import dev.estudos.jbank.repository.PagamentoRepository;
 import dev.estudos.jbank.repository.ParcelaRepository;
 import dev.estudos.jbank.service.PagamentoParcelaService;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * O objetivo dessa classe eh testar os cenarios de pagamento de emprestimo.
@@ -34,7 +35,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * pagamento na terça com o valor da parcela + juros + multa (deve permitir)
  *
  */
-@SpringBootTest()
+@SpringBootTest
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class PagamentoParcelaTests {
 
 	@Autowired

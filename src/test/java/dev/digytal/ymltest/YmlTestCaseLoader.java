@@ -2,6 +2,9 @@ package dev.digytal.ymltest;
 
 import java.lang.reflect.Method;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Table;
+
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -65,6 +68,13 @@ public class YmlTestCaseLoader {
 				return load(simpleResourceName);
 			}
 			throw e;
+		}
+	}
+
+	public void clearEntities(Class<?> ... classes) {
+		DataPopulator dataPopulator = this.dataPopulator.applicationContext.getBean(DataPopulator.class); 
+		for (Class<?> clazz : classes) {
+			dataPopulator.truncate(clazz);
 		}
 	}
 	

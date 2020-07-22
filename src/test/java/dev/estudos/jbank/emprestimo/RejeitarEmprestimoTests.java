@@ -8,6 +8,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 import dev.digytal.ymltest.YmlTestCase;
 import dev.digytal.ymltest.YmlTestCaseLoader;
@@ -17,6 +19,7 @@ import dev.estudos.jbank.repository.EmprestimoRepository;
 import dev.estudos.jbank.service.EmprestimoService;
 
 @SpringBootTest
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class RejeitarEmprestimoTests {
 	
 	@Autowired
