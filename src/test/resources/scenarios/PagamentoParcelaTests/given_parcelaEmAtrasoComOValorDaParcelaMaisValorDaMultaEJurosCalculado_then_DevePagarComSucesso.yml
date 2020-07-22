@@ -6,6 +6,8 @@ CONTEXT:
 - _class: dev.estudos.jbank.model.Configuracao
   id: 1
   taxaJurosPadrao: 2.0
+  jurosDeMora: 0.01
+  multaDeMora: 0.02
 
 - _class: dev.estudos.jbank.model.Cliente
   id: 1
@@ -25,13 +27,13 @@ CONTEXT:
   valor_principal: 800
   valor_juros: 200
   valor_total: 1000
-  status: A_VENCER
+  status: EM_ATRASO
 
 # Parametros para executar o teste
 INPUT:
   # vai realizar o pagamento da parcela 3 do emprestimo 100
   numDocumento: 100/3
-  valorAPagar: 1000
+  valorAPagar: 1000.05
 
 # O teste deve retornar um PagamentoParcela com os dados abaixo
 OUTPUT:
@@ -39,9 +41,10 @@ OUTPUT:
   numeroParcela: 3
   dataPagamento: 2020-07-01
   valorParcela: 1000
-  valorMulta: 0
-  valorJuros: 0
+  valorMulta: 0.02
+  valorJuros: 0.01
   idEmprestimo: 100
+  valorPago: 1000.03
   parcela:
     id: 101
     numero: 3 

@@ -1,7 +1,7 @@
 # Dados necessarios para execucao do teste
 CONTEXT:
 - _class: dev.estudos.jbank.utils.FlexibleCalendar
-  currentDate: 2020-07-01
+  currentDate: 2020-07-21
   
 - _class: dev.estudos.jbank.model.Configuracao
   id: 1
@@ -21,11 +21,11 @@ CONTEXT:
   numero: 3
   emprestimo_id: 100
   # a parcela deve está a vender
-  data_vencimento: 2020-07-15
+  data_vencimento: 2020-07-18
   valor_principal: 800
   valor_juros: 200
   valor_total: 1000
-  status: A_VENCER
+  status: EM_ATRASO
 
 # Parametros para executar o teste
 INPUT:
@@ -35,13 +35,6 @@ INPUT:
 
 # O teste deve retornar um PagamentoParcela com os dados abaixo
 OUTPUT:
-  _class: dev.estudos.jbank.model.PagamentoParcela
-  numeroParcela: 3
-  dataPagamento: 2020-07-01
-  valorParcela: 1000
-  valorMulta: 0
-  valorJuros: 0
-  idEmprestimo: 100
-  parcela:
-    id: 101
-    numero: 3 
+
+  _exception: dev.estudos.jbank.exception.PagamentoNaoAceitoException
+  message: VALOR DO PAGAMENTO MENOR QUE O VALOR DA PARCELA

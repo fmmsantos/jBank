@@ -1,6 +1,8 @@
 package dev.estudos.jbank.service;
 
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,7 +37,7 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 	public PagamentoParcela pagar(String numeroDocumento, BigDecimal valorPago) {
 
 		String parcelaIdEmprestimo[] = numeroDocumento.split("/");
-
+		LocalDate incrementarData=null;
 		String emprestimo = parcelaIdEmprestimo[0];
 		String parcelaNumero = parcelaIdEmprestimo[1];
 
@@ -64,6 +66,22 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 			pagamento.setParcela(parcela);
 			pagamento.getParcela().setNumero(numero);
 			Configuracao configuracao = confRepository.getConfiguracao();
+			
+			if (parcela.getDataVencimento().getDayOfWeek() == DayOfWeek.SATURDAY) {
+				incrementarData = parcela.getDataVencimento().plusDays(2);
+				parcela.setDataVencimento(incrementarData);
+			}
+			if	(parcela.getDataVencimento().getDayOfWeek() == DayOfWeek.SUNDAY) {
+				incrementarData = parcela.getDataVencimento().plusDays(1);
+				parcela.setDataVencimento(incrementarData);
+				
+				if (parcela.getDataVencimento().isBefore(FlexibleCalendar.currentDate())) {
+					parcela.setStatus(StatusParcela.EM_ATRASO);
+				} else {
+					parcela.setStatus(StatusParcela.A_VENCER);
+				}
+			
+			}
 			if (parcela.getStatus() == StatusParcela.EM_ATRASO) {
 				pagamento.setValorJuros(configuracao.getJurosDeMora());
 				pagamento.setValorMulta(configuracao.getMultaDeMora());
@@ -72,9 +90,9 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 				pagamento.setValorPago(totalApagar);
 
 			}
-			if (parcela.getStatus() == StatusParcela.EM_ATRASO && pagamento.getValorPago().compareTo(valorPago) < 0)
+			if (parcela.getStatus() == StatusParcela.EM_ATRASO && valorPago.compareTo(pagamento.getValorPago()) < 0)
 
-				throw new PagamentoNaoAceitoException("VALOR DO PAGAMENTO MENOR QUE O VALOR DA PARCELA");
+				throw new PagamentoNaoAceitoException("VALOR DO PAGAMENTO MENOR QUE O VALOR DA PARCELA" );
 
 		}
 		if (parcela.getStatus() == StatusParcela.A_VENCER) {
@@ -93,4 +111,5 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 		return pagamento;
 	}
 
-}
+	}
+

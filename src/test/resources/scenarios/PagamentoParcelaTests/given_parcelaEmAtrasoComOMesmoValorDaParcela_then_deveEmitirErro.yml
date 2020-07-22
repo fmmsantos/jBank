@@ -13,7 +13,7 @@ CONTEXT:
 
 - _table: Emprestimo
   id: 100
-  cliente_id: 2
+  cliente_id: 1
   valor_solicitado: 1000
   
 - _table: Parcela

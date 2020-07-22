@@ -82,14 +82,15 @@ public class PagamentoParcelaTests {
 		YmlTestCase testCase = testCaseLoader.loadOfMethodName();
 		String numDocumento = testCase.getInputItem("numDocumento");
 		BigDecimal valorAPagar = new BigDecimal(testCase.getInputItem("valorAPagar"));
-
-		PagamentoParcela pagamento = pagamentoParcelaService.pagar(numDocumento, valorAPagar);
-
-		// faz as verificaoes de acordo com o que foi definido no arquivo yml
-		testCase.assertOutput(pagamento);
-	
+		
+		// quando for um cenario que tem q emitir erro, coloca assim, para o testCase capturar a excecao
+		testCase.process(() -> {
+			PagamentoParcela output = pagamentoParcelaService.pagar(numDocumento, valorAPagar);
+			
+			return output;
+		});
 	}
-/*
+
 	@Test
 	public void given_parcelaEmAtrasoComOValorDaParcelaMaisValorDaMultaEJurosCalculado_then_DevePagarComSucesso() {
 		YmlTestCase testCase = testCaseLoader.loadOfMethodName();
@@ -121,7 +122,7 @@ public class PagamentoParcelaTests {
 
 	
 	}
-
+	
 	@Test
 	public void given_parcelaVencidaNoDomingoComPagamentoNaSegundaComOValorIgual_then_devePermitir() {
 		YmlTestCase testCase = testCaseLoader.loadOfMethodName();
@@ -137,23 +138,22 @@ public class PagamentoParcelaTests {
 
 	
 	}
-
+	
 	@Test
 	public void given_parcelaVencidaNoSabadoComPagamentoNaTercaComOValorIgual_then_DeveEmitirErro() {
 		YmlTestCase testCase = testCaseLoader.loadOfMethodName();
-
-		// cliente quer pagar a parcela 3 do emprestimo 100
 		String numDocumento = testCase.getInputItem("numDocumento");
 		BigDecimal valorAPagar = new BigDecimal(testCase.getInputItem("valorAPagar"));
-
-		PagamentoParcela pagamento = pagamentoParcelaService.pagar(numDocumento, valorAPagar);
-
-		// faz as verificaoes de acordo com o que foi definido no arquivo yml
-		testCase.assertOutput(pagamento);
-
+		
+		// quando for um cenario que tem q emitir erro, coloca assim, para o testCase capturar a excecao
+		testCase.process(() -> {
+			PagamentoParcela output = pagamentoParcelaService.pagar(numDocumento, valorAPagar);
+			
+			return output;
+		});
 		
 	}
-
+	
 	@Test
 	public void given_parcelaVencidaNoDomingoComPagamentoNaTercaComOValorDaParcelaMaisJurosMaisMulta_then_devePermitir() {
 		YmlTestCase testCase = testCaseLoader.loadOfMethodName();
@@ -170,6 +170,6 @@ public class PagamentoParcelaTests {
 		
 		
 	}
-	*/
+	
 
 }

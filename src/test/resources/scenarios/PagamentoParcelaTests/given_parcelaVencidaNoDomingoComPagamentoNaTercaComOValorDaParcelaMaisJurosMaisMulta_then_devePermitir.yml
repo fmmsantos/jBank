@@ -1,7 +1,7 @@
 # Dados necessarios para execucao do teste
 CONTEXT:
 - _class: dev.estudos.jbank.utils.FlexibleCalendar
-  currentDate: 2020-07-01
+  currentDate: 2020-07-21
   
 - _class: dev.estudos.jbank.model.Configuracao
   id: 1
@@ -21,7 +21,7 @@ CONTEXT:
   numero: 3
   emprestimo_id: 100
   # a parcela deve está a vender
-  data_vencimento: 2020-07-15
+  data_vencimento: 2020-07-19
   valor_principal: 800
   valor_juros: 200
   valor_total: 1000
@@ -31,17 +31,18 @@ CONTEXT:
 INPUT:
   # vai realizar o pagamento da parcela 3 do emprestimo 100
   numDocumento: 100/3
-  valorAPagar: 1000
+  valorAPagar: 1000.05
 
 # O teste deve retornar um PagamentoParcela com os dados abaixo
 OUTPUT:
   _class: dev.estudos.jbank.model.PagamentoParcela
   numeroParcela: 3
-  dataPagamento: 2020-07-01
+  dataPagamento: 2020-07-21
   valorParcela: 1000
-  valorMulta: 0
-  valorJuros: 0
+  valorMulta: 0.02
+  valorJuros: 0.01
   idEmprestimo: 100
+  valorPago: 1000.03
   parcela:
     id: 101
     numero: 3 
