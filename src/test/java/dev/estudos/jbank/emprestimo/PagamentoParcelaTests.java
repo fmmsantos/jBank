@@ -168,5 +168,20 @@ public class PagamentoParcelaTests {
 		
 	}
 	
+	@Test
+	public void given_parcelaEmAtrasoCom17Dias_then_calcularJurosEMultaDeMora() {
+		YmlTestCase testCase = testCaseLoader.loadOfMethodName();
+		
+		String numDocumento = testCase.getInputItem("numDocumento");
+		BigDecimal valorAPagar = new BigDecimal(testCase.getInputItem("valorAPagar"));
+		
+		// quando for um cenario que tem q emitir erro, coloca assim, para o testCase capturar a excecao
+		testCase.process(() -> {
+			PagamentoParcela output = pagamentoParcelaService.pagar(numDocumento, valorAPagar);
+			
+			return output;
+		});
+	}
+	
 
 }
