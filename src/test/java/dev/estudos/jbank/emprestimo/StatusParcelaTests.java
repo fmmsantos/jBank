@@ -6,8 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
 import dev.digytal.ymltest.YmlTestCase;
 import dev.digytal.ymltest.YmlTestCaseLoader;
@@ -19,7 +19,7 @@ import dev.estudos.jbank.repository.ParcelaRepository;
 import dev.estudos.jbank.service.EmprestimoService;
 
 @SpringBootTest
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@Sql(executionPhase=ExecutionPhase.AFTER_TEST_METHOD,scripts="classpath:/reset-data.sql")
 public class StatusParcelaTests {
 
 	@Autowired

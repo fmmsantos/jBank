@@ -8,8 +8,8 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 
 import dev.digytal.ymltest.YmlTestCase;
 import dev.digytal.ymltest.YmlTestCaseLoader;
@@ -20,23 +20,18 @@ import dev.estudos.jbank.service.PagamentoParcelaService;
 
 /**
  * O objetivo dessa classe eh testar os cenarios de pagamento de emprestimo.
- * mano eu tenho que criar uma classe pagamento de parcela ou posso usar a
- * classe parcel?
  * 
- * Pagamento de Parcelas
- * 
- * parcela a vencer com o mesmo valor da parcela (deve pagar com sucesso)
- * parcela em atraso com o mesmo valor da parcela (deve emitir erro) parcela em
- * atraso com o valor da parcela + valor da multa e juros calculado (deve pagar
- * com sucesso) parcela vencida no sábado com pagamento na segunda com o valor
- * igual (deve permitir) parcela vencida no domingo com pagamento na segunda com
- * o valor igual (deve permitir) parcela vencida no sábado com pagamento na
- * terça com o valor igual (deve emitir erro) parcela vencida no domingo com
- * pagamento na terça com o valor da parcela + juros + multa (deve permitir)
- *
+ * Cenários:
+ * - parcela a vencer com o mesmo valor da parcela (deve pagar com sucesso)
+ * - parcela em atraso com o mesmo valor da parcela (deve emitir erro) parcela em
+ * - atraso com o valor da parcela + valor da multa e juros calculado (deve pagar com sucesso) 
+ * - parcela vencida no sábado com pagamento na segunda com o valor igual (deve permitir) 
+ * - parcela vencida no domingo com pagamento na segunda com o valor igual (deve permitir) 
+ * - parcela vencida no sábado com pagamento na terça com o valor igual (deve emitir erro) 
+ * - parcela vencida no domingo com pagamento na terça com o valor da parcela + juros + multa (deve permitir)
  */
 @SpringBootTest
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@Sql(executionPhase=ExecutionPhase.AFTER_TEST_METHOD,scripts="classpath:/reset-data.sql")
 public class PagamentoParcelaTests {
 
 	@Autowired
