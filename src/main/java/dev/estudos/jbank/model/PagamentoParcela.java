@@ -24,6 +24,7 @@ public class PagamentoParcela {
 	private BigDecimal valorJuros = BigDecimal.ZERO;
 	private BigDecimal valorMulta = BigDecimal.ZERO;
 	private LocalDateTime dataHoraPagamento;
+	private Integer diasAtraso;
 	@OneToOne
 	private Parcela parcela;
 	
@@ -106,7 +107,13 @@ public class PagamentoParcela {
 		return Objects.equals(id, other.id);
 	}
 	
+	public Integer getDiasAtraso() {
+		return diasAtraso;
+	}
 	
+	public void setDiasAtraso(Integer diasAtraso) {
+		this.diasAtraso = diasAtraso;
+	}
 	
 
 }

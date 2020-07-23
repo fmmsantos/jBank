@@ -1,0 +1,49 @@
+# Dados necessarios para execucao do teste
+CONTEXT:
+- _class: dev.estudos.jbank.utils.FlexibleCalendar
+  currentDate: 2020-07-20
+  
+- _class: dev.estudos.jbank.model.Configuracao
+  id: 1
+  taxaJurosPadrao: 0.0 
+  jurosDeMora: 1.0
+  multaDeMora: 2.0
+
+- _class: dev.estudos.jbank.model.Cliente
+  id: 1
+  nome: FRANK SANTOS
+
+- _class: dev.estudos.jbank.model.Emprestimo
+  id: 123
+  cliente: 
+    id: 1
+  valorSolicitado: 2000
+
+- _class: dev.estudos.jbank.model.Parcela
+  numero: 1
+  dataVencimento: 2020-06-10
+  valorTotal: 1000
+  status: EM_ATRASO
+  emprestimo:
+    id: 123
+
+# Parametros para executar o teste
+INPUT:
+  # vai realizar o pagamento da parcela 2 do emprestimo 123
+  numDocumento: 123/1
+  valorAPagar: 1279.20
+
+# O teste deve retornar um PagamentoParcela com os dados abaixo
+OUTPUT:
+  _class: dev.estudos.jbank.model.PagamentoParcela
+  numeroParcela: 1
+  dataPagamento: 2020-07-20
+  valorParcela: 1000
+  diasAtraso: 40
+  valorMulta: 20.00
+  valorJuros: 13.33
+  idEmprestimo: 123
+  valorPago: 1033.33
+  parcela:
+    id: 1
+    numero: 1
