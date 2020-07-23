@@ -41,9 +41,9 @@ OUTPUT:
   dataPagamento: 2020-07-20
   valorParcela: 1200
   valorMulta: 57.60
-  valorJuros: 21.60
+  valorJuros: 21.76
   idEmprestimo: 1
-  valorPago: 1279.20
+  valorPago: 1279.36
   parcela:
     id: 1
     numero: 1

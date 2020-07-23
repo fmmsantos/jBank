@@ -44,11 +44,11 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 
 		String parcelaIdEmprestimo[] = numeroDocumento.split("/");
 
-		String emprestimo = parcelaIdEmprestimo[0];
+		String emprestimoId = parcelaIdEmprestimo[0];
 		String parcelaNumero = parcelaIdEmprestimo[1];
 
 		int numero = Integer.parseInt(parcelaNumero);
-		Long idEmprestimo = Long.parseLong(emprestimo);
+		Long idEmprestimo = Long.parseLong(emprestimoId);
 
 		Parcela parcela = emprestimoService.getParcela(idEmprestimo, numero);
 
@@ -79,19 +79,21 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 			pagamento.setValorMulta(
 					configuracao.getMultaDeMora().divide(new BigDecimal(100), 3, RoundingMode.HALF_EVEN));
 
-			int hoje1 = pagamento.getDataPagamento().getDayOfMonth();
+			
 			long dias = ChronoUnit.DAYS.between(pagamento.getDataPagamento(), parcela.getDataVencimento());
-			Integer dia = (int) -dias;
-			pagamento.setDiasAtraso(dia);
+			int diaDeVencimento = (int) -dias;
+			pagamento.setDiasAtraso(diaDeVencimento);
 
 			BigDecimal diasVencidJuros = pagamento.getValorJuros().multiply(new BigDecimal(pagamento.getDiasAtraso()));
 
-			BigDecimal arredondar1 = diasVencidJuros.divide(new BigDecimal(30), 5, RoundingMode.HALF_DOWN);
+			BigDecimal arredondarJuros = diasVencidJuros.divide(new BigDecimal(30), 5, RoundingMode.HALF_EVEN);
+			
 
-			BigDecimal totalJuros = arredondar1.multiply(parcela.getValorTotal());
-			BigDecimal totalMulta = parcela.getValorTotal().multiply(pagamento.getValorMulta());
-			pagamento.setValorPago(totalJuros.add(totalMulta).add(parcela.getValorTotal()));
-			pagamento.setValorJuros(totalJuros);
+			BigDecimal totalJuros = arredondarJuros.multiply(parcela.getValorTotal());
+			BigDecimal totalMulta = parcela.getValorTotal().multiply(pagamento.getValorMulta()); 
+			BigDecimal totalDeJuros = totalJuros.setScale(2, RoundingMode.HALF_EVEN);
+			pagamento.setValorPago(totalDeJuros.add(totalMulta).add(parcela.getValorTotal()));
+			pagamento.setValorJuros(totalDeJuros);
 			pagamento.setValorMulta(totalMulta);
 
 		}
