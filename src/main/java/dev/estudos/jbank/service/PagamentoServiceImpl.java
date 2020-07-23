@@ -127,7 +127,6 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 			pagamento.getParcela();
 			pagamento.getParcela().getNumero();
 			pagamentoRepo.save(pagamento);
-
 		}
 
 		return pagamento;
