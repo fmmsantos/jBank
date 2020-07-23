@@ -34,54 +34,46 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 	private ConfiguracaoRepository confRepository;
 	@Autowired
 	private PagamentoRepository pagamentoRepo;
-	
+
 	@Autowired
 	private EmprestimoServiceImpl emprestimoService;
-	
 
 	@Override
 	public PagamentoParcela pagar(String numeroDocumento, BigDecimal valorPago) {
 
 		String parcelaIdEmprestimo[] = numeroDocumento.split("/");
-		
+
 		String emprestimo = parcelaIdEmprestimo[0];
 		String parcelaNumero = parcelaIdEmprestimo[1];
 
 		int numero = Integer.parseInt(parcelaNumero);
 		Long idEmprestimo = Long.parseLong(emprestimo);
 
-		//Optional<Emprestimo> empres = repository.findById(idEmprestimo);
-
 		Parcela parcela = emprestimoService.getParcela(idEmprestimo, numero);
 
-		
-	//	if (parcela == null) {
-			//throw new IllegalArgumentException(
-			//		"Parcela " + numero + " nao encontrada para o emprestimo " + idEmprestimo);
-	//	}
-
 		PagamentoParcela pagamento = new PagamentoParcela();
+		pagamento.getValorMulta();
+		pagamento.getValorJuros();
+		pagamento.setDataPagamento(FlexibleCalendar.currentDate());
+		pagamento.setIdEmprestimo(idEmprestimo);
+		pagamento.setNumeroParcela(parcelaNumero);
+		pagamento.setValorParcela(parcela.getValorTotal());
+		pagamento.setParcela(parcela);
+		pagamento.getParcela().setNumero(numero);
+		pagamentoRepo.save(pagamento);
 		Configuracao configuracao = confRepository.getConfiguracao();
 
 		if (parcela.getNumero() == numero && parcela.getStatus() != StatusParcela.PAGO) {
 
-			pagamento.setDataPagamento(FlexibleCalendar.currentDate());
-			pagamento.setIdEmprestimo(idEmprestimo);
-			pagamento.setNumeroParcela(parcelaNumero);
-			pagamento.setValorParcela(parcela.getValorTotal());
-			pagamento.setParcela(parcela);
-			pagamento.getParcela().setNumero(numero);
-			
-
 			parcela = emprestimoService.processarStatusParcela(idEmprestimo, numero);
-			
+
 			if (parcela.getStatus() == StatusParcela.EM_ATRASO && valorPago.compareTo(parcela.getValorTotal()) <= 0)
 
 				throw new PagamentoNaoAceitoException("VALOR DO PAGAMENTO MENOR QUE O VALOR DA PARCELA");
 
 		}
 		if (parcela.getStatus() == StatusParcela.EM_ATRASO) {
-			
+
 			pagamento.setValorJuros(
 					configuracao.getJurosDeMora().divide(new BigDecimal(100), 3, RoundingMode.HALF_EVEN));
 			pagamento.setValorMulta(
@@ -103,15 +95,7 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 
 		}
 		if (parcela.getStatus() == StatusParcela.A_VENCER) {
-			pagamento.getNumeroParcela();
-			pagamento.getDataPagamento();
-			pagamento.getValorParcela();
-			pagamento.getValorMulta();
-			pagamento.getValorJuros();
-			pagamento.getIdEmprestimo();
-			pagamento.getParcela();
-			pagamento.getParcela().getNumero();
-			pagamentoRepo.save(pagamento);
+
 		}
 
 		return pagamento;
