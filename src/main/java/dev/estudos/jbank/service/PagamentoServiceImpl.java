@@ -70,7 +70,6 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 			if (parcela.getStatus() == StatusParcela.EM_ATRASO && valorPago.compareTo(parcela.getValorTotal()) <= 0)
 
 				throw new PagamentoNaoAceitoException("VALOR DO PAGAMENTO MENOR QUE O VALOR DA PARCELA");
-
 		}
 		if (parcela.getStatus() == StatusParcela.EM_ATRASO) {
 
