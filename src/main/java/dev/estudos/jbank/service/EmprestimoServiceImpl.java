@@ -344,10 +344,19 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 			parcela.setStatus(StatusParcela.EM_ATRASO);
 
 		}
-		if (parcela.getDataVencimento().getDayOfWeek() == DayOfWeek.SATURDAY
-				|| parcela.getDataVencimento().getDayOfWeek() == DayOfWeek.SUNDAY) {
+		if (parcela.getDataVencimento().getDayOfWeek() == DayOfWeek.SATURDAY) {
 			incrementarData = parcela.getDataVencimento().plusDays(2);
 			parcela.setDataVencimento(incrementarData);
+			if (parcela.getDataVencimento().isBefore(FlexibleCalendar.currentDate())) {
+				parcela.setStatus(StatusParcela.EM_ATRASO);
+			} else {
+				parcela.setStatus(StatusParcela.A_VENCER);
+			}
+		}
+		if	(parcela.getDataVencimento().getDayOfWeek() == DayOfWeek.SUNDAY) {
+			incrementarData = parcela.getDataVencimento().plusDays(1);
+			parcela.setDataVencimento(incrementarData);
+			
 			if (parcela.getDataVencimento().isBefore(FlexibleCalendar.currentDate())) {
 				parcela.setStatus(StatusParcela.EM_ATRASO);
 			} else {

@@ -43,24 +43,22 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 	public PagamentoParcela pagar(String numeroDocumento, BigDecimal valorPago) {
 
 		String parcelaIdEmprestimo[] = numeroDocumento.split("/");
-		LocalDate incrementarData = null;
+		
 		String emprestimo = parcelaIdEmprestimo[0];
 		String parcelaNumero = parcelaIdEmprestimo[1];
 
 		int numero = Integer.parseInt(parcelaNumero);
 		Long idEmprestimo = Long.parseLong(emprestimo);
 
-		Optional<Emprestimo> empres = repository.findById(idEmprestimo);
+		//Optional<Emprestimo> empres = repository.findById(idEmprestimo);
 
 		Parcela parcela = emprestimoService.getParcela(idEmprestimo, numero);
 
-		// vc tem que trabalhar com excecoes para indicar o que acontece no codigoo
-		// pq NullPointerexception ninguem sabe o que eh.
-		// vc tem que mandar mensagens explicativas
-		if (parcela == null) {
-			throw new IllegalArgumentException(
-					"Parcela " + numero + " nao encontrada para o emprestimo " + idEmprestimo);
-		}
+		
+	//	if (parcela == null) {
+			//throw new IllegalArgumentException(
+			//		"Parcela " + numero + " nao encontrada para o emprestimo " + idEmprestimo);
+	//	}
 
 		PagamentoParcela pagamento = new PagamentoParcela();
 		Configuracao configuracao = confRepository.getConfiguracao();
@@ -73,22 +71,9 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 			pagamento.setValorParcela(parcela.getValorTotal());
 			pagamento.setParcela(parcela);
 			pagamento.getParcela().setNumero(numero);
+			
 
-			if (parcela.getDataVencimento().getDayOfWeek() == DayOfWeek.SATURDAY) {
-				incrementarData = parcela.getDataVencimento().plusDays(2);
-				parcela.setDataVencimento(incrementarData);
-			}
-			if (parcela.getDataVencimento().getDayOfWeek() == DayOfWeek.SUNDAY) {
-				incrementarData = parcela.getDataVencimento().plusDays(1);
-				parcela.setDataVencimento(incrementarData);
-
-				if (parcela.getDataVencimento().isBefore(FlexibleCalendar.currentDate())) {
-					parcela.setStatus(StatusParcela.EM_ATRASO);
-				} else {
-					parcela.setStatus(StatusParcela.A_VENCER);
-				}
-
-			}
+			parcela = emprestimoService.processarStatusParcela(idEmprestimo, numero);
 			
 			if (parcela.getStatus() == StatusParcela.EM_ATRASO && valorPago.compareTo(parcela.getValorTotal()) <= 0)
 

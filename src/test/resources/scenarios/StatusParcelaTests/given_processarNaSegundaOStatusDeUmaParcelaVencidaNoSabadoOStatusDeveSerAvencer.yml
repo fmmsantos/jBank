@@ -1,6 +1,6 @@
 CONTEXT:
 - _class: dev.estudos.jbank.utils.FlexibleCalendar
-  currentDate: 2020-06-22
+  currentDate: 2020-07-20
   
 - _class: dev.estudos.jbank.model.Configuracao
   id: 1
@@ -18,7 +18,7 @@ CONTEXT:
 - _table: Parcela
   numero: 1
   emprestimo_id: 300
-  data_vencimento: 2020-06-20
+  data_vencimento: 2020-07-18
   valor_principal: 800
   valor_juros: 200
   valor_total: 1000
