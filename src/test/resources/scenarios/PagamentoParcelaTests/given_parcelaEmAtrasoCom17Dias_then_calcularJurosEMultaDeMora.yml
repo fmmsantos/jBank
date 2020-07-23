@@ -33,8 +33,8 @@ CONTEXT:
 INPUT:
   # vai realizar o pagamento da parcela 3 do emprestimo 100
   numDocumento: 1/1
-  valorAPagar: 1279.36
-
+  valorAPagar: 1279.20
+ 
 # O teste deve retornar um PagamentoParcela com os dados abaixo
 OUTPUT:
   _class: dev.estudos.jbank.model.PagamentoParcela
@@ -42,9 +42,9 @@ OUTPUT:
   dataPagamento: 2020-07-20
   valorParcela: 1200
   valorMulta: 57.60
-  valorJuros: 21.76
-  idEmprestimo: 100
-  valorPago: 1279.36
+  valorJuros: 21.60
+  idEmprestimo: 1
+  valorPago: 1279.20
   parcela:
     id: 1
     numero: 1

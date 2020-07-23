@@ -330,8 +330,8 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 
 		Optional<Emprestimo> emprestimo = repository.findById(idEmprestimo);
 		LocalDate incrementarData = null;
-
-		Parcela parcela = parcelaRepository.findByEmprestimoIdAndNumero(idEmprestimo, numeroParcela);
+		Parcela parcela = getParcela(idEmprestimo,numeroParcela);
+		
 		if (!emprestimo.isPresent()) {
 			throw new IllegalArgumentException("Emprestimo nao encontrado com o id " + idEmprestimo);
 		}
@@ -360,8 +360,8 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 
 	@Override
 	public Parcela getParcela(Long idEmprestimo, int numParcela) {
-		// TODO Auto-generated method stub
-		return null;
+		Parcela parcela = parcelaRepository.findByEmprestimoIdAndNumero(idEmprestimo, numParcela);
+		return parcela;
 	}
 
 }

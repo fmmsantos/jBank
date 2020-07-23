@@ -1,6 +1,9 @@
 package dev.estudos.jbank.model;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.time.LocalDate;
 
 import javax.annotation.Generated;
 import javax.persistence.Entity;
@@ -17,8 +20,8 @@ public class Configuracao {
 	private Integer qtdMaximaParcelas= 0;
 	private BigDecimal valorMinimoParcela = BigDecimal.ZERO;
 	public int idadeMinima=0;
-	private BigDecimal jurosDeMora= BigDecimal.valueOf(0.01);
-	private BigDecimal multaDeMora= BigDecimal.valueOf(0.02);
+	private BigDecimal jurosDeMora = BigDecimal.ZERO;
+	private BigDecimal multaDeMora = BigDecimal.ZERO;
 	
 	public Long getId() {
 		return id;
@@ -27,25 +30,31 @@ public class Configuracao {
 		this.id = id;
 	}
 	public BigDecimal getTaxaJurosPadrao() {
+		
 		return taxaJurosPadrao;
 	}
 	public void setTaxaJurosPadrao(BigDecimal taxaJurosPadrao) {
+		
+		
 		this.taxaJurosPadrao = taxaJurosPadrao;
 	}
 	
 	public Integer getQtdMaximaParcelas() {
+		
 		return qtdMaximaParcelas;
 	}
 	public void setQtdMaximaParcelas(Integer qtdMaximaParcelas) {
 		this.qtdMaximaParcelas = qtdMaximaParcelas;
 	}
 	public BigDecimal getValorMinimoParcela() {
+		
 		return valorMinimoParcela;
 	}
 	public void setValorMinimoParcela(BigDecimal valorMinimoParcela) {
 		this.valorMinimoParcela = valorMinimoParcela;
 	}
 	public BigDecimal getJurosDeMora() {
+		
 		return jurosDeMora;
 	}
 	public void setJurosDeMora(BigDecimal jurosDeMora) {

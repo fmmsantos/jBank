@@ -1,6 +1,8 @@
 package dev.estudos.jbank.service;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
@@ -32,12 +34,16 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 	private ConfiguracaoRepository confRepository;
 	@Autowired
 	private PagamentoRepository pagamentoRepo;
+	
+	@Autowired
+	private EmprestimoServiceImpl emprestimoService;
+	
 
 	@Override
 	public PagamentoParcela pagar(String numeroDocumento, BigDecimal valorPago) {
 
 		String parcelaIdEmprestimo[] = numeroDocumento.split("/");
-		LocalDate incrementarData=null;
+		LocalDate incrementarData = null;
 		String emprestimo = parcelaIdEmprestimo[0];
 		String parcelaNumero = parcelaIdEmprestimo[1];
 
@@ -46,16 +52,18 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 
 		Optional<Emprestimo> empres = repository.findById(idEmprestimo);
 
-		Parcela parcela = parcelaRepository.findByEmprestimoIdAndNumero(idEmprestimo, numero);
-		
+		Parcela parcela = emprestimoService.getParcela(idEmprestimo, numero);
+
 		// vc tem que trabalhar com excecoes para indicar o que acontece no codigoo
-		// pq NullPointerexception ninguem sabe o que eh. 
+		// pq NullPointerexception ninguem sabe o que eh.
 		// vc tem que mandar mensagens explicativas
 		if (parcela == null) {
-			throw new IllegalArgumentException("Parcela " + numero + " nao encontrada para o emprestimo " + idEmprestimo);
+			throw new IllegalArgumentException(
+					"Parcela " + numero + " nao encontrada para o emprestimo " + idEmprestimo);
 		}
 
 		PagamentoParcela pagamento = new PagamentoParcela();
+		Configuracao configuracao = confRepository.getConfiguracao();
 
 		if (parcela.getNumero() == numero && parcela.getStatus() != StatusParcela.PAGO) {
 
@@ -65,34 +73,48 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 			pagamento.setValorParcela(parcela.getValorTotal());
 			pagamento.setParcela(parcela);
 			pagamento.getParcela().setNumero(numero);
-			Configuracao configuracao = confRepository.getConfiguracao();
-			
+
 			if (parcela.getDataVencimento().getDayOfWeek() == DayOfWeek.SATURDAY) {
 				incrementarData = parcela.getDataVencimento().plusDays(2);
 				parcela.setDataVencimento(incrementarData);
 			}
-			if	(parcela.getDataVencimento().getDayOfWeek() == DayOfWeek.SUNDAY) {
+			if (parcela.getDataVencimento().getDayOfWeek() == DayOfWeek.SUNDAY) {
 				incrementarData = parcela.getDataVencimento().plusDays(1);
 				parcela.setDataVencimento(incrementarData);
-				
+
 				if (parcela.getDataVencimento().isBefore(FlexibleCalendar.currentDate())) {
 					parcela.setStatus(StatusParcela.EM_ATRASO);
 				} else {
 					parcela.setStatus(StatusParcela.A_VENCER);
 				}
+
+			}
 			
-			}
-			if (parcela.getStatus() == StatusParcela.EM_ATRASO) {
-				pagamento.setValorJuros(configuracao.getJurosDeMora());
-				pagamento.setValorMulta(configuracao.getMultaDeMora());
-				BigDecimal totalApagar = pagamento.getValorParcela().add(pagamento.getValorJuros())
-						.add(pagamento.getValorMulta());
-				pagamento.setValorPago(totalApagar);
+			if (parcela.getStatus() == StatusParcela.EM_ATRASO && valorPago.compareTo(parcela.getValorTotal()) <= 0)
 
-			}
-			if (parcela.getStatus() == StatusParcela.EM_ATRASO && valorPago.compareTo(pagamento.getValorPago()) < 0)
+				throw new PagamentoNaoAceitoException("VALOR DO PAGAMENTO MENOR QUE O VALOR DA PARCELA");
 
-				throw new PagamentoNaoAceitoException("VALOR DO PAGAMENTO MENOR QUE O VALOR DA PARCELA" );
+		}
+		if (parcela.getStatus() == StatusParcela.EM_ATRASO) {
+			
+			pagamento.setValorJuros(
+					configuracao.getJurosDeMora().divide(new BigDecimal(100), 3, RoundingMode.HALF_EVEN));
+			pagamento.setValorMulta(
+					configuracao.getMultaDeMora().divide(new BigDecimal(100), 3, RoundingMode.HALF_EVEN));
+
+			int hoje1 = pagamento.getDataPagamento().getDayOfMonth();
+			int dia = parcela.getDataVencimento().getDayOfMonth();
+			int diasDeAtraso = hoje1 - dia;
+
+			BigDecimal diasVencidJuros = pagamento.getValorJuros().multiply(new BigDecimal(diasDeAtraso));
+
+			BigDecimal arredondar1 = diasVencidJuros.divide(new BigDecimal(30), 3, RoundingMode.HALF_DOWN);
+
+			BigDecimal totalJuros = arredondar1.multiply(parcela.getValorTotal());
+			BigDecimal totalMulta = parcela.getValorTotal().multiply(pagamento.getValorMulta());
+			pagamento.setValorPago(totalJuros.add(totalMulta).add(parcela.getValorTotal()));
+			pagamento.setValorJuros(totalJuros);
+			pagamento.setValorMulta(totalMulta);
 
 		}
 		if (parcela.getStatus() == StatusParcela.A_VENCER) {
@@ -111,5 +133,4 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 		return pagamento;
 	}
 
-	}
-
+}
