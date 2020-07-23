@@ -5,6 +5,7 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -79,12 +80,13 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 					configuracao.getMultaDeMora().divide(new BigDecimal(100), 3, RoundingMode.HALF_EVEN));
 
 			int hoje1 = pagamento.getDataPagamento().getDayOfMonth();
-			int dia = parcela.getDataVencimento().getDayOfMonth();
-			int diasDeAtraso = hoje1 - dia;
+			long dias = ChronoUnit.DAYS.between(pagamento.getDataPagamento(), parcela.getDataVencimento());
+			Integer dia = (int) -dias;
+			pagamento.setDiasAtraso(dia);
 
-			BigDecimal diasVencidJuros = pagamento.getValorJuros().multiply(new BigDecimal(diasDeAtraso));
+			BigDecimal diasVencidJuros = pagamento.getValorJuros().multiply(new BigDecimal(pagamento.getDiasAtraso()));
 
-			BigDecimal arredondar1 = diasVencidJuros.divide(new BigDecimal(30), 3, RoundingMode.HALF_DOWN);
+			BigDecimal arredondar1 = diasVencidJuros.divide(new BigDecimal(30), 5, RoundingMode.HALF_DOWN);
 
 			BigDecimal totalJuros = arredondar1.multiply(parcela.getValorTotal());
 			BigDecimal totalMulta = parcela.getValorTotal().multiply(pagamento.getValorMulta());
