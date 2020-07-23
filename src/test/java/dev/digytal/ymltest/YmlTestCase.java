@@ -209,7 +209,7 @@ public class YmlTestCase {
 					"Exception type is not equals ==> expected: <%s> but was: <%s>", 
 					exceptionType.getName(), exception.getClass().getName()
 				);
-				Assertions.fail(message);
+				Assertions.fail(message, exception);
 			}
 			ObjectNode exceptionNode = getExceptionNode();
 			

@@ -1,0 +1,7 @@
+INPUT:
+  numDocumento: 999/1
+  valorAPagar: 1000
+
+OUTPUT:
+  _exception: dev.estudos.jbank.exception.PagamentoNaoAceitoException
+  message: Parcela nao encontrada
