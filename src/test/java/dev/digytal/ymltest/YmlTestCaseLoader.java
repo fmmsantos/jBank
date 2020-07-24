@@ -1,9 +1,7 @@
 package dev.digytal.ymltest;
 
 import java.lang.reflect.Method;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Table;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -33,8 +31,28 @@ public class YmlTestCaseLoader {
 		
 		return testCase;
 	}
+	
+	public List<YmlTestCase> loadMultiple(String resourceName) {
+		List<YmlTestCase> testCases = YmlTestCase.multipleOfResource(scenariosFolder + "/" + resourceName);
+		
+		return testCases;
+	}
+	
+	public YmlTestCase loadData(YmlTestCase testCase) {
+		JsonNode contextData = testCase.getContextData();
+		if (contextData != null) {
+			dataPopulator.populate(contextData);
+		}
+		return testCase;
+	}
 
 	public YmlTestCase loadOfMethodName() {
+		List<YmlTestCase> testCases = loadMultipleOfMethodName();
+		
+		return loadData(testCases.get(0));
+	}
+	
+	public List<YmlTestCase> loadMultipleOfMethodName() {
 		StackTraceElement item = null;
 		String simpleClassName = null;
 		
@@ -62,10 +80,10 @@ public class YmlTestCaseLoader {
 		String simpleResourceName = simpleClassName + "/" + item.getMethodName() + ".yml";
 		
 		try {
-			return load(resourceName);
+			return loadMultiple(resourceName);
 		} catch(IllegalArgumentException e) {
 			if (e.getMessage().startsWith("Resource not found")) {
-				return load(simpleResourceName);
+				return loadMultiple(simpleResourceName);
 			}
 			throw e;
 		}

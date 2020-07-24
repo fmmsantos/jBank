@@ -1,3 +1,4 @@
+---
 INPUT:
   numDocumento: ABCD2
   valorAPagar: 1000
@@ -5,3 +6,24 @@ INPUT:
 OUTPUT:
   _exception: dev.estudos.jbank.exception.PagamentoNaoAceitoException
   message: Numero do documento inválido
+
+---
+
+INPUT:
+  numDocumento: 0ABCD2
+  valorAPagar: 1000
+
+OUTPUT:
+  _exception: dev.estudos.jbank.exception.PagamentoNaoAceitoException
+  message: Numero do documento inválido
+
+---
+
+INPUT:
+  numDocumento: 12A20/2
+  valorAPagar: 1000
+
+OUTPUT:
+  _exception: dev.estudos.jbank.exception.PagamentoNaoAceitoException
+  message: Numero do documento inválido
+ 

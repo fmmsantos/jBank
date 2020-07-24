@@ -20,12 +20,18 @@ public class YmlObjectMapperFactory {
 	static final Module MODULE = new SimpleModule("ymlTestCaseModule")
 		.setDeserializerModifier(new IgnorePropsDeserializerModifier("_class"));
 	
-	static final ObjectMapper YAML_MAPPER = new ObjectMapper(new YAMLFactory())
+	static final YAMLFactory FACTORY = new YAMLFactory();
+	
+	static final ObjectMapper YAML_MAPPER = new ObjectMapper(FACTORY)
 		.registerModule(new JavaTimeModule())
 		.registerModule(MODULE);
 	
 	public static ObjectMapper getYamlMapper() {
 		return YAML_MAPPER;
+	}
+	
+	public static YAMLFactory getYamlFactory() {
+		return FACTORY;
 	}
 	
 	public static class IgnorePropsDeserializerModifier extends BeanDeserializerModifier {

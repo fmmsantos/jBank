@@ -3,6 +3,7 @@ package dev.estudos.jbank.emprestimo;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -119,14 +120,18 @@ public class PagamentoParcelaTests {
 	}
 	
 	private void executarTestCase() {
-		testCase = testCaseLoader.loadOfMethodName();
+		List<YmlTestCase> testCases = testCaseLoader.loadMultipleOfMethodName();
 		
-		numDocumento = testCase.getInputItem("numDocumento");
-		valorAPagar = new BigDecimal(testCase.getInputItem("valorAPagar"));
-		
-		output = testCase.process(() -> {
-			return pagamentoParcelaService.pagar(numDocumento, valorAPagar);
-		});
+		for (YmlTestCase current : testCases) {
+			testCase = testCaseLoader.loadData(current);
+			
+			numDocumento = testCase.getInputItem("numDocumento");
+			valorAPagar = new BigDecimal(testCase.getInputItem("valorAPagar"));
+			
+			output = testCase.process(() -> {
+				return pagamentoParcelaService.pagar(numDocumento, valorAPagar);
+			});
+		}
 	}
 	
 	private void verificarDadosSalvos() {

@@ -13,8 +13,10 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -24,11 +26,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.dataformat.yaml.YAMLParser;
 
 public class YmlTestCase {
 
@@ -58,6 +62,20 @@ public class YmlTestCase {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	public static List<YmlTestCase> multipleOfResource(String resource) {
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		try (InputStream input = classLoader.getResourceAsStream(resource)) {
+			
+			if (input == null) {
+				throw new IllegalArgumentException("Resource not found: " + resource);
+			}
+			
+			return multipleOfStream(input);
+		} catch (IOException e) {
+			throw new RuntimeException("Error load YmlTestCase: " + resource, e);
+		}
+	}
 
 	public static YmlTestCase ofStream(InputStream input) throws IOException {
 		if (input == null) {
@@ -72,6 +90,25 @@ public class YmlTestCase {
 		YmlTestCase testCase = new YmlTestCase(node);
 		
 		return testCase;		
+	}
+	
+	public static List<YmlTestCase> multipleOfStream(InputStream input) throws IOException {
+		if (input == null) {
+			throw new IllegalArgumentException("InputStream is null");
+		}
+		
+		YAMLParser yamlParser = YmlObjectMapperFactory.getYamlFactory().createParser(input);
+		
+		List<ObjectNode> docs = YAML_MAPPER
+			  .readValues(yamlParser, new TypeReference<ObjectNode>() {})
+		      .readAll();
+		
+		List<YmlTestCase> testCases = docs.stream()
+			.filter(it -> !it.isMissingNode())
+			.map(it -> new YmlTestCase(it))
+			.collect(Collectors.toList());
+		
+		return testCases;
 	}
 	
 	@SuppressWarnings("unchecked")
