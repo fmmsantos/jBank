@@ -27,7 +27,6 @@ import dev.estudos.jbank.utils.FlexibleCalendar;
 @Service
 public class PagamentoServiceImpl implements PagamentoParcelaService {
 
-	
 	@Autowired
 	private ConfiguracaoRepository confRepository;
 	@Autowired
@@ -38,35 +37,24 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 
 	@Override
 	public PagamentoParcela pagar(String numeroDocumento, BigDecimal valorPago) {
-		
-		if(Character.isAlphabetic((numeroDocumento.charAt(0)))) {
+
+		if (Character.isAlphabetic((numeroDocumento.charAt(0)))) {
 			throw new PagamentoNaoAceitoException("Numero do documento inválido");
 		}
-		
-		
-		
-		
+
 		String parcelaIdEmprestimo[] = numeroDocumento.split("/");
-		
-		
-		
 
 		String emprestimoId = parcelaIdEmprestimo[0];
 		String parcelaNumero = parcelaIdEmprestimo[1];
-
-		
-		
-		
-		
 
 		int numero = Integer.parseInt(parcelaNumero);
 		Long idEmprestimo = Long.parseLong(emprestimoId);
 
 		Parcela parcela = emprestimoService.getParcela(idEmprestimo, numero);
-		
-		if(parcela == null) {
+
+		if (parcela == null) {
 			throw new PagamentoNaoAceitoException("Parcela nao encontrada");
-			
+
 		}
 
 		PagamentoParcela pagamento = new PagamentoParcela();
@@ -96,7 +84,6 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 			pagamento.setValorMulta(
 					configuracao.getMultaDeMora().divide(new BigDecimal(100), 3, RoundingMode.HALF_EVEN));
 
-			
 			long dias = ChronoUnit.DAYS.between(pagamento.getDataPagamento(), parcela.getDataVencimento());
 			int diaDeVencimento = (int) -dias;
 			pagamento.setDiasAtraso(diaDeVencimento);
@@ -104,10 +91,9 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 			BigDecimal diasVencidJuros = pagamento.getValorJuros().multiply(new BigDecimal(pagamento.getDiasAtraso()));
 
 			BigDecimal arredondarJuros = diasVencidJuros.divide(new BigDecimal(30), 5, RoundingMode.HALF_EVEN);
-			
 
 			BigDecimal totalJuros = arredondarJuros.multiply(parcela.getValorTotal());
-			BigDecimal totalMulta = parcela.getValorTotal().multiply(pagamento.getValorMulta()); 
+			BigDecimal totalMulta = parcela.getValorTotal().multiply(pagamento.getValorMulta());
 			BigDecimal totalDeJuros = totalJuros.setScale(2, RoundingMode.HALF_EVEN);
 			pagamento.setValorPago(totalDeJuros.add(totalMulta).add(parcela.getValorTotal()));
 			pagamento.setValorJuros(totalDeJuros);
@@ -121,21 +107,18 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 
 		return pagamento;
 	}
-	
+
 	public boolean possuiLetra(String numeroDocumento) {
-		 
 
-        for (int i = 0; i < numeroDocumento.length(); i++) {
-          if (Character.isDigit(numeroDocumento.charAt(i))==true)
-          {
-             
-              break;
-          }
-          
+		for (int i = 0; i < numeroDocumento.length(); i++) {
+			if (Character.isDigit(numeroDocumento.charAt(i)) == true) {
 
-        }
-        return true;
-       
+				break;
+			}
+
+		}
+		return true;
+
 	}
 
 }
