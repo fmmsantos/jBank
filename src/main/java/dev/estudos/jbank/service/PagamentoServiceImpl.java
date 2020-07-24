@@ -27,10 +27,7 @@ import dev.estudos.jbank.utils.FlexibleCalendar;
 @Service
 public class PagamentoServiceImpl implements PagamentoParcelaService {
 
-	@Autowired
-	private ParcelaRepository parcelaRepository;
-	@Autowired
-	private EmprestimoRepository repository;
+	
 	@Autowired
 	private ConfiguracaoRepository confRepository;
 	@Autowired
@@ -41,16 +38,36 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 
 	@Override
 	public PagamentoParcela pagar(String numeroDocumento, BigDecimal valorPago) {
-
+		
+		if(Character.isAlphabetic((numeroDocumento.charAt(0)))) {
+			throw new PagamentoNaoAceitoException("Numero do documento inválido");
+		}
+		
+		
+		
+		
 		String parcelaIdEmprestimo[] = numeroDocumento.split("/");
+		
+		
+		
 
 		String emprestimoId = parcelaIdEmprestimo[0];
 		String parcelaNumero = parcelaIdEmprestimo[1];
+
+		
+		
+		
+		
 
 		int numero = Integer.parseInt(parcelaNumero);
 		Long idEmprestimo = Long.parseLong(emprestimoId);
 
 		Parcela parcela = emprestimoService.getParcela(idEmprestimo, numero);
+		
+		if(parcela == null) {
+			throw new PagamentoNaoAceitoException("Parcela nao encontrada");
+			
+		}
 
 		PagamentoParcela pagamento = new PagamentoParcela();
 		pagamento.getValorMulta();
@@ -95,6 +112,7 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 			pagamento.setValorPago(totalDeJuros.add(totalMulta).add(parcela.getValorTotal()));
 			pagamento.setValorJuros(totalDeJuros);
 			pagamento.setValorMulta(totalMulta);
+			pagamentoRepo.save(pagamento);
 
 		}
 		if (parcela.getStatus() == StatusParcela.A_VENCER) {
@@ -102,6 +120,22 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 		}
 
 		return pagamento;
+	}
+	
+	public boolean possuiLetra(String numeroDocumento) {
+		 
+
+        for (int i = 0; i < numeroDocumento.length(); i++) {
+          if (Character.isDigit(numeroDocumento.charAt(i))==true)
+          {
+             
+              break;
+          }
+          
+
+        }
+        return true;
+       
 	}
 
 }
