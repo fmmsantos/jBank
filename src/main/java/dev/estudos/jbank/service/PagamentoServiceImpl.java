@@ -58,8 +58,6 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 		}
 
 		PagamentoParcela pagamento = new PagamentoParcela();
-		pagamento.getValorMulta();
-		pagamento.getValorJuros();
 		pagamento.setDataPagamento(FlexibleCalendar.currentDate());
 		pagamento.setIdEmprestimo(idEmprestimo);
 		pagamento.setNumeroParcela(parcelaNumero);
@@ -108,17 +106,8 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 		return pagamento;
 	}
 
-	public boolean possuiLetra(String numeroDocumento) {
-
-		for (int i = 0; i < numeroDocumento.length(); i++) {
-			if (Character.isDigit(numeroDocumento.charAt(i)) == true) {
-
-				break;
-			}
-
-		}
-		return true;
+	
 
 	}
 
-}
+
