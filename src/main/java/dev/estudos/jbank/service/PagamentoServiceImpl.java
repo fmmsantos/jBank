@@ -38,18 +38,15 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 	@Override
 	public PagamentoParcela pagar(String numeroDocumento, BigDecimal valorPago) {
 
-		if (numeroDocumento.matches("\\d*") || (!(numeroDocumento.contains("/")))) {
+		if (!numeroDocumento.matches("\\d+\\/\\d+")) {
 			throw new PagamentoNaoAceitoException("Numero do documento inválido");
 		}
 
 		String parcelaIdEmprestimo[] = numeroDocumento.split("/");
 
 		String emprestimoId = parcelaIdEmprestimo[0];
-		String parcelaNumero = parcelaIdEmprestimo[1];
 
-		if (!emprestimoId.matches("\\d*") || !parcelaNumero.matches("\\d*")) {
-			throw new PagamentoNaoAceitoException("Numero do documento inválido");
-		}
+		String parcelaNumero = parcelaIdEmprestimo[1];
 
 		int numero = Integer.parseInt(parcelaNumero);
 		Long idEmprestimo = Long.parseLong(emprestimoId);
