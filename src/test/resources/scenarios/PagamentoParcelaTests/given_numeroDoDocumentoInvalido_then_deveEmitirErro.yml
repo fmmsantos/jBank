@@ -27,3 +27,29 @@ OUTPUT:
   _exception: dev.estudos.jbank.exception.PagamentoNaoAceitoException
   message: Numero do documento inválido
  
+---
+INPUT:
+  numDocumento: 12A20/12a
+  valorAPagar: 1000
+
+OUTPUT:
+  _exception: dev.estudos.jbank.exception.PagamentoNaoAceitoException
+  message: Numero do documento inválido
+
+---
+INPUT:
+  numDocumento: 123/1a
+  valorAPagar: 1000
+
+OUTPUT:
+  _exception: dev.estudos.jbank.exception.PagamentoNaoAceitoException
+  message: Numero do documento inválido
+
+---
+INPUT:
+  numDocumento: 123/a
+  valorAPagar: 1000
+
+OUTPUT:
+  _exception: dev.estudos.jbank.exception.PagamentoNaoAceitoException
+  message: Numero do documento inválido
