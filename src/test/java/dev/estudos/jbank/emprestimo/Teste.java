@@ -11,8 +11,21 @@ public class Teste {
 		
 		boolean comp = data.isBefore(FlexibleCalendar.currentDate());
 		
-		System.out.println(data.getDayOfMonth());
+	//	System.out.println(data.getDayOfMonth());
 
+		
+		String idade = "2A023/2";
+		
+		String a = "a2w5sd6545";
+		
+			System.out.println(!a.contains("\\d*"));
+			System.out.println(idade.matches("\\d*") );
+			System.out.println(!idade.contains("/"));
+			System.out.println(idade.contains("/"));
+		
+		
+	
+		
 	}
 
 }
