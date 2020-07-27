@@ -1,6 +1,6 @@
 ---
 INPUT:
-  numDocumento: ABCD2
+  numDocumento: aaa
   valorAPagar: 1000
 
 OUTPUT:
@@ -10,7 +10,7 @@ OUTPUT:
 ---
 
 INPUT:
-  numDocumento: 0ABCD2
+  numDocumento: abc
   valorAPagar: 1000
 
 OUTPUT:
@@ -20,7 +20,7 @@ OUTPUT:
 ---
 
 INPUT:
-  numDocumento: 12A20/2
+  numDocumento: add/cd
   valorAPagar: 1000
 
 OUTPUT:
