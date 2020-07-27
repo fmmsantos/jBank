@@ -47,7 +47,7 @@ public class PagamentoServiceImpl implements PagamentoParcelaService {
 		String emprestimoId = parcelaIdEmprestimo[0];
 		String parcelaNumero = parcelaIdEmprestimo[1];
 
-		if (!emprestimoId.matches("\\d*")) {
+		if (!emprestimoId.matches("\\d*") || !parcelaNumero.matches("\\d*")) {
 			throw new PagamentoNaoAceitoException("Numero do documento inválido");
 		}
 
